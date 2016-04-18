@@ -8,6 +8,54 @@ Script the will create the matrices needed for the MI formulation
 """
 import numpy as np
 
+def InitiateA_nMatrix(n):
+    total_size = 0
+    for x in xrange(n,3,-1):
+        total_size = total_size + ((x-1)*(x-2)/2)
+        
+    rowNum = 0
+    for x in xrange(1,n):
+        rowNum = rowNum+x
+      
+    print "total_size = ", total_size    
+    colNum = total_size
+    Matrix = np.zeros((rowNum, total_size))
+    print Matrix
+    return Matrix
+    
+
+
+
+def calcPerm(n):
+    mylist = list(xrange(1,n+1))
+    uptoplist = [] 
+    for k in range(4,n+1): 
+        for j in range(2,k):
+            for i in range(1,j):
+                if i<j and j<k:                
+#                    print i," ", j, " ", k
+                    uptoplist.append([i, j, k])
+        
+
+                
+       
+    
+    leftlist = []
+    for j in range(2,n+1):
+        for i in range(1, n):
+            if i<j :
+#                print i, " ", j
+                leftlist.append([i, j])
+#    print uptoplist, len(uptoplist) 
+#    print leftlist, len(leftlist)
+    return uptoplist, leftlist
+
+
+def MakeA_nMatrix(d):
+    pass
+
+
+    
 def MakeMatrixEn(d):
     matrix_size = len(d)+3
     print matrix_size
