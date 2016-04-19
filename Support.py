@@ -3,10 +3,30 @@
 Created on Mon Apr 18 08:34:34 2016
 
 Script the will create the matrices needed for the MI formulation
-
+1. To create E_n matrix: call MakeMatrixEn(n)
+2. To create A_n matrix: call MakeMatrixA_n(n)
+3. To create full matrix call MakeMatrixFull(n)
 @author: kqia040
 """
 import numpy as np
+
+def MakeMatrixFull(n):
+    E_n = MakeMatrixEn(n)
+    A_n, leftlist = MakeMatrixA_n(n)
+    print E_n, A_n
+    LeftMatrix = np.row_stack((E_n,A_n))
+    print LeftMatrix
+    righttop = np.zeros((n-3,len(leftlist)))
+    rightbot = np.identity(len(leftlist))
+    print righttop, rightbot
+    RightMatrix = np.row_stack((righttop,rightbot))
+    print "LeftMatrix", LeftMatrix, LeftMatrix.shape
+    print "-"*50
+    print "RightMatrix", RightMatrix, RightMatrix.shape
+    FullMatrix = np.hstack((LeftMatrix,RightMatrix))
+    print FullMatrix, FullMatrix.shape
+    return FullMatrix
+
 
 def InitiateA_nMatrix(n):
     total_size = 0
@@ -23,7 +43,7 @@ def InitiateA_nMatrix(n):
     print Matrix
     return Matrix
     
-def FillA_nMatrix(n):
+def MakeMatrixA_n(n):
 #take the initiated all 0 matrix and fill it up with 1 -1 and 0 in appropriate places   
     emptyA_n = InitiateA_nMatrix(n)
     uptoplist, leftlist = calcPerm(n)
@@ -37,7 +57,7 @@ def FillA_nMatrix(n):
         emptyA_n[x][i] = -1
         emptyA_n[y][i] = -1
         
-    print emptyA_n
+    return emptyA_n, leftlist
         
         
 def calcPerm(n):
@@ -61,12 +81,10 @@ def calcPerm(n):
     return uptoplist, leftlist
 
 
-def MakeA_nMatrix(d):
-    pass
-
 
     
-def MakeMatrixEn(d):
+def MakeMatrixEn(n):
+    d = MakeDictionaryOfEnVectors(n)
     matrix_size = len(d)+3
     print matrix_size
     b= np.row_stack((d["e_4"],d["e_5"]))
