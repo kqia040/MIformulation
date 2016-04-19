@@ -10,21 +10,44 @@ Script the will create the matrices needed for the MI formulation
 """
 import numpy as np
 
+
+def calculateSTSP(n):
+    Matrix = MakeMatrixFull(n)    
+    height = Matrix.shape[0]
+    width = Matrix.shape[1]
+    b_1 = np.ones(n-3)
+    b_2 = np.ones(3)
+    b_3 = np.zeros(height-n-3)
+#    print b_1, b_2, b_3
+    b = np.concatenate((b_1, b_2))
+    b = np.concatenate((b, b_3))
+    c = np.zeros(width)
+    s = np.zeros(width)
+    constraintCost = np.dot(c,s)
+    constraint = {}
+#    print Matrix[0],Matrix[1],Matrix[2]
+    for i in range(height):
+        constraint["constraint_{0}".format(i)] = np.dot(Matrix[0],s)
+        
+    return Matrix, b, c, s, constraintCost, constraint
+
+
+
 def MakeMatrixFull(n):
     E_n = MakeMatrixEn(n)
     A_n, leftlist = MakeMatrixA_n(n)
-    print E_n, A_n
+#    print E_n, A_n
     LeftMatrix = np.row_stack((E_n,A_n))
-    print LeftMatrix
+#    print LeftMatrix
     righttop = np.zeros((n-3,len(leftlist)))
     rightbot = np.identity(len(leftlist))
-    print righttop, rightbot
+#    print righttop, rightbot
     RightMatrix = np.row_stack((righttop,rightbot))
-    print "LeftMatrix", LeftMatrix, LeftMatrix.shape
-    print "-"*50
-    print "RightMatrix", RightMatrix, RightMatrix.shape
+#    print "LeftMatrix", LeftMatrix, LeftMatrix.shape
+#    print "-"*50
+#    print "RightMatrix", RightMatrix, RightMatrix.shape
     FullMatrix = np.hstack((LeftMatrix,RightMatrix))
-    print FullMatrix, FullMatrix.shape
+#    print FullMatrix, FullMatrix.shape
     return FullMatrix
 
 
@@ -37,22 +60,22 @@ def InitiateA_nMatrix(n):
     for x in xrange(1,n):
         rowNum = rowNum+x
       
-    print "total_size = ", total_size    
+#    print "total_size = ", total_size    
     colNum = total_size
     Matrix = np.zeros((rowNum, total_size))
-    print Matrix
+#    print Matrix
     return Matrix
     
 def MakeMatrixA_n(n):
 #take the initiated all 0 matrix and fill it up with 1 -1 and 0 in appropriate places   
     emptyA_n = InitiateA_nMatrix(n)
     uptoplist, leftlist = calcPerm(n)
-    print emptyA_n.shape
+#    print emptyA_n.shape
     for i in range((len(uptoplist))):
         z = leftlist.index([uptoplist[i][0], uptoplist[i][1]])
         x = leftlist.index([uptoplist[i][0], uptoplist[i][2]])
         y = leftlist.index([uptoplist[i][1], uptoplist[i][2]])
-        print z,x,y
+#        print z,x,y
         emptyA_n[z][i] = 1
         emptyA_n[x][i] = -1
         emptyA_n[y][i] = -1
@@ -86,7 +109,7 @@ def calcPerm(n):
 def MakeMatrixEn(n):
     d = MakeDictionaryOfEnVectors(n)
     matrix_size = len(d)+3
-    print matrix_size
+#    print matrix_size
     b= np.row_stack((d["e_4"],d["e_5"]))
     for x in xrange(5,matrix_size):
         b = np.row_stack((b,d["e_{0}".format(x+1)]))
@@ -100,7 +123,7 @@ def MakeDictionaryOfEnVectors(n):
     for x in xrange(n,3,-1):
         total_size = total_size + ((x-1)*(x-2)/2)
           
-    print "total_size = ", total_size
+#    print "total_size = ", total_size
 #    for x in xrange(n-1,3,-1):
 #        if x == 4:
 #            e_n_minus1_size = e_n_minus1_size +3

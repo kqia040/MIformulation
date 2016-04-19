@@ -7,6 +7,32 @@ This script will execute calculations
 
 import Support as sp
 import numpy as np
+from gurobipy import *
+
+
+Matrix, b, c, s, constraintCost, constraint = calculateSTSP(5)
+
+try:
+    # Create a new model
+    m = Model("mip1")
+    # Create variables
+    constraintCost = m.addVar(vtype=GRB.BINARY, name="constraintCost")
+    
+    # Integrate new variables
+    m.update()
+    # Set objective
+    m.setObjective(constraintCost, GRB.MINIMISE)
+    # Add constraint: x + 2 y + 3 z <= 4
+    for i in range(len(constraint)):
+        m.addConstr(constraint["constraint_{0}".format(i)] = b[i], "c0")
+   
+    m.optimize()
+    
+    for v in m.getVars():
+        print v.varName, v.x
+        print 'Obj:', m.objVal
+except GurobiError:
+    print 'Error reported'
 
 #c = sp.InitiateA_nMatrix(5)
 #print c.shape
