@@ -11,7 +11,7 @@ import numpy as np
 #c = sp.InitiateA_nMatrix(5)
 #print c.shape
 
-
+#a, b = sp.calcPerm(5)
 
 #d={}
 #d = sp.MakeDictionaryOfEnVectors(6)

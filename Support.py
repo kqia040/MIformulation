@@ -23,11 +23,25 @@ def InitiateA_nMatrix(n):
     print Matrix
     return Matrix
     
-
-
-
+def FillA_nMatrix(n):
+#take the initiated all 0 matrix and fill it up with 1 -1 and 0 in appropriate places   
+    emptyA_n = InitiateA_nMatrix(n)
+    uptoplist, leftlist = calcPerm(n)
+    print emptyA_n.shape
+    for i in range((len(uptoplist))):
+        z = leftlist.index([uptoplist[i][0], uptoplist[i][1]])
+        x = leftlist.index([uptoplist[i][0], uptoplist[i][2]])
+        y = leftlist.index([uptoplist[i][1], uptoplist[i][2]])
+        print z,x,y
+        emptyA_n[z][i] = 1
+        emptyA_n[x][i] = -1
+        emptyA_n[y][i] = -1
+        
+    print emptyA_n
+        
+        
 def calcPerm(n):
-    mylist = list(xrange(1,n+1))
+
     uptoplist = [] 
     for k in range(4,n+1): 
         for j in range(2,k):
