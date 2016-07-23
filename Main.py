@@ -9,11 +9,14 @@ import Support as sp
 import numpy as np
 from gurobipy import *
 import pandas as pd
-
+import sympy as sy
 Matrix, b, c, s, constraintCost, constraint = sp.calculateSTSP(6)
-print Matrix
-a = np.asmatrix(Matrix)
-print a.columnspace()
+a = np.matrix(Matrix)
+b = sy.Matrix(Matrix)
+c = sy.Matrix(b.columnspace())
+print b.shape
+
+
 #my_df = pd.DataFrame(Matrix)
 #my_df.to_csv('my_csv.csv', index=False, header=False)
 #try:
