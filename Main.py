@@ -10,11 +10,17 @@ import numpy as np
 from gurobipy import *
 import pandas as pd
 import sympy as sy
-Matrix, b, c, s, constraintCost, constraint = sp.calculateSTSP(6)
-a = np.matrix(Matrix)
-b = sy.Matrix(Matrix)
-c = sy.Matrix(b.columnspace())
-print b.shape
+#Matrix, b, c, s, constraintCost, constraint = sp.calculateSTSP(6)
+#a = np.matrix(Matrix)
+#b = sy.Matrix(Matrix)
+#c = sy.Matrix(b.columnspace())
+#print b.shape
+
+uptoplist, leftlist = sp.calcPerm(6)
+print uptoplist
+print leftlist
+print len(leftlist)
+
 
 
 #my_df = pd.DataFrame(Matrix)

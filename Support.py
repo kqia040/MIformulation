@@ -102,7 +102,16 @@ def calcPerm(n):
 #    print uptoplist, len(uptoplist) 
 #    print leftlist, len(leftlist)
     return uptoplist, leftlist
+    
+    
 
+def makeVfromTSPLIB():
+#need to make V set from TSPLIB file
+#generate R set    
+#generate N set 
+    something = []
+    
+    
 
 
     
