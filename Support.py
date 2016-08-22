@@ -105,13 +105,10 @@ def calcPerm(n):
     
     
 
-def makeVfromTSPLIB():
-#need to make V set from TSPLIB file
-#generate R set    
-#generate N set 
-    something = []
-    
-    
+#def makeVfromTSPLIB():
+##need to make V set from TSPLIB file
+##generate R set    
+##generate N set 
 
 
     
