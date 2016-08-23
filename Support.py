@@ -90,17 +90,17 @@ def calcPerm(n):
         for j in range(2,k):
             for i in range(1,j):
                 if i<j and j<k:                
-#                    print i," ", j, " ", k
+                    print i," ", j, " ", k
                     uptoplist.append([i, j, k])
 
     leftlist = []
     for j in range(2,n+1):
         for i in range(1, n):
             if i<j :
-#                print i, " ", j
+                print i, " ", j
                 leftlist.append([i, j])
-#    print uptoplist, len(uptoplist) 
-#    print leftlist, len(leftlist)
+    print uptoplist, len(uptoplist) 
+    print leftlist, len(leftlist)
     return uptoplist, leftlist
     
     
