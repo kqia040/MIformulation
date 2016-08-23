@@ -47,6 +47,17 @@ for i in range(1,42):
 #creates N set
 a, N_set = sp.calcPerm(42)
 
+#Create V with R and N
+v_set.append(R_set)
+v_set.append(N_set)
+
+#example reading it
+len(v_set[0])
+#41
+len(v_set[1])
+#861
+
+
 
 #Create R, N set (from pedgree I think)
 #Calculate demand for d(N)
