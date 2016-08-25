@@ -113,10 +113,46 @@ df
 
 #insert the -1 (for the R nodes)
 for i in R_set:
-    colIndex = dfColNames[0:15].index(P[R_set.index(i)])
-    rowIndex = R_set.index(i)
-    df[colIndex][rowIndex] = -1
+    colIndexRoot = dfColNames[0:15].index(P[R_set.index(i)])
+    print colIndexRoot, " ", P[R_set.index(i)][0], " ", P[R_set.index(i)][1], " ", R_set[R_set.index(i)].name
+    newNode1 = [P[R_set.index(i)][0],R_set[R_set.index(i)].name]
+    newNode2 = [P[R_set.index(i)][1],R_set[R_set.index(i)].name]    
+    rowIndexRoot = R_set.index(i)
+    rowIndexInsert1 = dfRowNames.index(newNode1)
+    rowIndexInsert2 = dfRowNames.index(newNode2)
+    df[colIndexRoot][rowIndexRoot] = -1
+    df[colIndexRoot][rowIndexInsert1] = -1
+    df[colIndexRoot][rowIndexInsert2] = -1
     
+df
+
+#slack variables
+U_set = dfColNames[len(dfColNames) - len(R_set):len(dfColNames)]
+M_R_size = len(R_set)
+ColCounter = M_R_size
+rowCounter = 0
+for i in range(4,4+M_R_size):        
+    rowRootNumIndex = dfRowNames.index(i)
+    colIndex = len(dfColNames)-ColCounter    
+    df[colIndex][rowRootNumIndex] = -1
+    rowInsertPlusOneIndex = dfRowNames.index(U_set[rowCounter])
+    if U_set[rowCounter][0] < i:
+        newNode1 = [colIndex, dfRowNames.index([U_set[rowCounter][0],i])]
+    else:
+        newNode1 = [colIndex, dfRowNames.index(i,[U_set[rowCounter][0]])]
+    if U_set[rowCounter][1] < i:
+        newNode2 = [colIndex, dfRowNames.index([U_set[rowCounter][1],i])]
+    else:
+        newNode2 = [colIndex, dfRowNames.index(i,[U_set[rowCounter][1]])]    
+
+    df[colIndex][newNode1[1]] = -1
+    df[colIndex][newNode2[1]] = -1
+    df[colIndex][rowInsertPlusOneIndex] = 1   
+    ColCounter = ColCounter-1
+    rowCounter = rowCounter +1
+df
+
+
 
 #andt hen we want to find the differnce btween the P and N_set and then 
 #add that to the E_T list with edges of emptyset,IJ
