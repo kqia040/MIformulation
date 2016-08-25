@@ -9,8 +9,7 @@ Created on Mon Aug 22 08:49:42 2016
 #Containing all the code for the MI project
 #importing libs
 import numpy as np
-from collections import deque
-
+import pandas as pd
 import sys
 sys.path.append('C:\Users\kqia040\Documents\GitHub\MIformulation')
 import Support as sp
@@ -18,7 +17,7 @@ import Support as sp
 #Import TSPLIB matrix
 
 #set path of the file
-path1 = "swiss42.tsp"
+path1 = "tsp6problem.tsp"
 def read_tsp_file(path):
     matrixFromFile = np.genfromtxt(path1, skip_header=7, skip_footer = 1)
     return matrixFromFile
@@ -39,13 +38,13 @@ v_set = []
 R_set = []
 N_set = []
 #creates R
-for i in range(1,42):
+for i in range(4,7):
     x = Vertex()
     x.name = i
     R_set.append(x)
 
 #creates N set
-a, N_set = sp.calcPerm(42)
+a, N_set = sp.calcPerm(6)
 
 #Create V with R and N
 v_set.append(R_set)
@@ -58,8 +57,73 @@ len(v_set[1])
 #861
 
 
+#Generate Pedgree -> i'm going to cheat here and just use an existing pedgree
+P = []
+P.append([1,3])
+P.append([1,4])
+P.append([2,3])
 
+
+#Generate E_T by pedegree is this E or ET. hmmmmm
+E_T = []
+for i in range(len(P)):
+    E_T.append([int(v_set[0][i].name),P[i]])
+    
+for i in N_set:
+    if i not in P:
+        E_T.append([0,i])
+
+
+
+dfRowNames = []
+for i in R_set:
+    dfRowNames.append(i.name)
+
+for i in N_set:
+    dfRowNames.append(i)
+    
+    
+#df.index = dfRowNames
+
+dfColNames = []
+for i in N_set:
+    dfColNames.append(i)
+
+
+#Here u can appead any item that is linearly indenpendent
+#later on we will pick the ones that are most optimal to pivot to later in optimatlity checking
+#for the purposes of the initial solution, we can pick any that is linearly independent
+dfColNames.append([1,2])
+dfColNames.append([3,4])
+dfColNames.append([3,5])
+
+
+MatrixSize = (len(N_set) + len(P),len(N_set) + len(P))
+matrixA = np.zeros(MatrixSize)
+df = pd.DataFrame(data = matrixA)
+
+#maybe dont use dataframe, use matrix
+#setting the diagonal 1's
+for i in range(3,len(dfRowNames)):
+    indexOfi = dfColNames[0:15].index(dfRowNames[i])    
+    print indexOfi, " ", i
+    df[indexOfi][i] = 1
+    
+df
+
+#insert the -1 (for the R nodes)
+for i in R_set:
+    colIndex = dfColNames[0:15].index(P[R_set.index(i)])
+    rowIndex = R_set.index(i)
+    df[colIndex][rowIndex] = -1
+    
+
+#andt hen we want to find the differnce btween the P and N_set and then 
+#add that to the E_T list with edges of emptyset,IJ
 #Create R, N set (from pedgree I think)
+
+
+
 #Calculate demand for d(N)
 #
 #Create E set
