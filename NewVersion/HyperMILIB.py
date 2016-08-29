@@ -38,9 +38,12 @@ class Vertex:
 #how do i assign flow per node?
 class Edge:
     def __init__(self, name, tail=[], head=[]):
-        self.name = name        
+        self.name = name
+        #tail = [[k],[i,k],[j,k]]        
         self.tail = tail
         self.head = head
+        
+
 
 #Create V set
 v_set = []
@@ -54,6 +57,18 @@ for i in range(4,7):
 
 #creates N set
 a, N_set = sp.calcPerm(6)
+
+def CreateNSet(n):
+    leftlist = []
+    for j in range(2,n+1):
+        for i in range(1, n):
+            if i<j :
+#                print i, " ", j
+                leftlist.append([i, j])
+#    print uptoplist, len(uptoplist) 
+#    print leftlist, len(leftlist)
+    return leftlist
+
 
 #Create V with R and N
 v_set.append(R_set)
@@ -76,13 +91,21 @@ P.append([2,3])
 #Generate E_T by pedegree is this E or ET. hmmmmm
 E_T = []
 for i in range(len(P)):
-    E_T.append([int(v_set[0][i].name),P[i]])
+    edgeInstance = Edge([int(v_set[0][i].name),P[i]])        
+    edgeInstance.head = P[i]
+    edgeInstance.tail = [[int(v_set[0][i].name)],[P[i][0],int(v_set[0][i].name)],[P[i][1], int(v_set[0][i].name)]]    
+    #print edgeInstance.name    
+    E_T.append(edgeInstance)
     
 for i in N_set:
     if i not in P:
-        E_T.append([0,i])
+        edgeInstance = Edge([0,i])
+        edgeInstance.head = i
+        edgeInstance.tail = [0]
+        #print edgeInstance.name        
+        E_T.append(edgeInstance)
 
-
+for p in E_T: print "name ", p.name, "head " ,p.head, "tail", p.tail
 
 dfRowNames = []
 for i in R_set:
@@ -174,34 +197,76 @@ df
 #
 #Create E set
 E_set = []
-h_e_set = []
-T_e = []
 
-
-for i in N_set:
-    E_set.append([0,i])
-
-for k in range(4,4+M_R_size):
-    for j in range(2,4+M_R_size):
-            for i in range(1,j):
-                if i<j and j<k:
-                    edge = Edge()
-                    edge.name = [k,[i,j]]                    
-                    E_set.append(edge)
-
-#version two, same as code above
-for i in N_set:
-    E_set.append([0,i])
-
-for k in range(4,4+M_R_size):
-    for j in range(2,4+M_R_size):
-            for i in range(1,j):
-                if i<j and j<k:
-                    E_set.append([k,[i,j]])
-    
-    
 #Create h_e set for e_i
 #Create T_e set for e_i
+for i in N_set:
+    edgeInstance = Edge([0,i])
+    edgeInstance.head = i
+    edgeInstance.tail = [0]    
+    E_set.append(edgeInstance)
+
+
+
+for k in range(4,4+M_R_size):
+    for j in range(2,4+M_R_size):
+            for i in range(1,j):
+                if i<j and j<k:
+                    edge = Edge([k,[i,j]])
+                    edge.head = [i,j]
+                    edge.tail = [[k],[i,k],[j,k]]                    
+                    E_set.append(edge)
+
+    
+for p in E_set: print "name ", p.name, "head " ,p.head, "tail", p.tail
+
+#create list of names in E_T
+E_TnameList = []    
+for i in E_T:
+    E_TnameList.append(i.name)
+
+#create E_X 
+E_X =[] 
+for i in xrange(0,len(E_set)):
+    if E_set[i].name in E_TnameList:
+        E_X.append(E_set[i])
+
+len(E_X)
+for p in E_X: print "name ", p.name, "head " ,p.head, "tail", p.tail
+        
+
+#make H=(V,E)
+H = [v_set, E_set]    
+
+#make random pedegree generator    
+np.random.seed(1)
+N_set_subset = []
+Avaiable_N_set = []
+Auto_Pedegree = []
+N_list = CreateNSet(3)
+nodeCreated1 = []
+nodeCreated2 = []
+#set it starting from 3 because we start from the n=3
+for i in range(3,3+M_R_size):
+    root_index = i+1       
+    randomIndex = np.random.choice(len(N_list), 1)
+    Auto_Pedegree.append(N_list[int(randomIndex)])
+    PedegreeNode = N_list[int(randomIndex)]
+    nodeCreated1 = [PedegreeNode[0],root_index]
+    nodeCreated2 = [PedegreeNode[1],root_index]
+    N_list.remove(PedegreeNode)
+    N_list.append(nodeCreated1)
+    N_list.append(nodeCreated2)
+    
+for i in Auto_Pedegree: print i
+    
+    
+#and then write the code to generate matrix M based on pedegree    
+
+#Make \tau_r for the hypertree path (from random pedegree i think)    
+    
+    
+
 #Assign cost for e_i
 #Find capacity for e_i
 #Find flows for f(X) (is it just 0, or is it adding up the capacity)
