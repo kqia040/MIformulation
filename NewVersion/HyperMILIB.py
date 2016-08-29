@@ -29,9 +29,18 @@ MatrixFromFile = read_tsp_file(path1)
 
 
 #Create V class
+#how to i assign capacity per node?
 class Vertex:
     def __init__(self, name=None):
         self.name = name
+
+#Creat Edge Class
+#how do i assign flow per node?
+class Edge:
+    def __init__(self, name, tail=[], head=[]):
+        self.name = name        
+        self.tail = tail
+        self.head = head
 
 #Create V set
 v_set = []
@@ -125,6 +134,7 @@ for i in R_set:
     df[colIndexRoot][rowIndexInsert2] = -1
     
 df
+#Making M the induced matrix
 
 #slack variables
 U_set = dfColNames[len(dfColNames) - len(R_set):len(dfColNames)]
@@ -163,13 +173,40 @@ df
 #Calculate demand for d(N)
 #
 #Create E set
+E_set = []
+h_e_set = []
+T_e = []
+
+
+for i in N_set:
+    E_set.append([0,i])
+
+for k in range(4,4+M_R_size):
+    for j in range(2,4+M_R_size):
+            for i in range(1,j):
+                if i<j and j<k:
+                    edge = Edge()
+                    edge.name = [k,[i,j]]                    
+                    E_set.append(edge)
+
+#version two, same as code above
+for i in N_set:
+    E_set.append([0,i])
+
+for k in range(4,4+M_R_size):
+    for j in range(2,4+M_R_size):
+            for i in range(1,j):
+                if i<j and j<k:
+                    E_set.append([k,[i,j]])
+    
+    
 #Create h_e set for e_i
 #Create T_e set for e_i
 #Assign cost for e_i
 #Find capacity for e_i
 #Find flows for f(X) (is it just 0, or is it adding up the capacity)
 #Making H = (V, E)
-#Making M the induced matrix
+
 #Make \tau_r for the hypertree path (from random pedegree i think)
 #Primal
 #Flow
