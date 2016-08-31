@@ -12,65 +12,27 @@ import numpy as np
 import pandas as pd
 import sys
 sys.path.append('C:\Users\kqia040\Documents\GitHub\MIformulation')
-import Support as sp
-
-#Import TSPLIB matrix
+import HyperSupport as sp
 
 #set path of the file
 path1 = "tsp6problem.tsp"
-def read_tsp_file(path):
-    matrixFromFile = np.genfromtxt(path1, skip_header=7, skip_footer = 1)
-    return matrixFromFile
-
 
 #gives me the matrix    
-MatrixFromFile = read_tsp_file(path1)
+MatrixFromFile = sp.read_tsp_file(path1)
 #returns the matrix I want. 
 
-
-#Create V class
-#how to i assign capacity per node?
-class Vertex:
-    def __init__(self, name=None):
-        self.name = name
-
-#Creat Edge Class
-#how do i assign flow per node?
-class Edge:
-    def __init__(self, name, tail=[], head=[]):
-        self.name = name
-        #tail = [[k],[i,k],[j,k]]        
-        self.tail = tail
-        self.head = head
-        
-
+#find n
+numCity = len(MatrixFromFile)
 
 #Create V set
-v_set = []
-R_set = []
-N_set = []
-#creates R
-for i in range(4,7):
-    x = Vertex()
-    x.name = i
-    R_set.append(x)
+
+#create R set of root nodes
+R_set = sp.CreateRset(numCity)
 
 #creates N set
-a, N_set = sp.calcPerm(6)
-
-def CreateNSet(n):
-    leftlist = []
-    for j in range(2,n+1):
-        for i in range(1, n):
-            if i<j :
-#                print i, " ", j
-                leftlist.append([i, j])
-#    print uptoplist, len(uptoplist) 
-#    print leftlist, len(leftlist)
-    return leftlist
-
-
+N_set = sp.CreateNset(numCity)
 #Create V with R and N
+v_set = []
 v_set.append(R_set)
 v_set.append(N_set)
 
@@ -87,47 +49,34 @@ P.append([1,3])
 P.append([1,4])
 P.append([2,3])
 
+#or use the auto pedegree generator function
 
 #Generate E_T by pedegree is this E or ET. hmmmmm
-E_T = []
-for i in range(len(P)):
-    edgeInstance = Edge([int(v_set[0][i].name),P[i]])        
-    edgeInstance.head = P[i]
-    edgeInstance.tail = [[int(v_set[0][i].name)],[P[i][0],int(v_set[0][i].name)],[P[i][1], int(v_set[0][i].name)]]    
-    #print edgeInstance.name    
-    E_T.append(edgeInstance)
-    
-for i in N_set:
-    if i not in P:
-        edgeInstance = Edge([0,i])
-        edgeInstance.head = i
-        edgeInstance.tail = [0]
-        #print edgeInstance.name        
-        E_T.append(edgeInstance)
+E_T = sp.GenerateE_T(v_set,P)
 
-for p in E_T: print "name ", p.name, "head " ,p.head, "tail", p.tail
-
-dfRowNames = []
-for i in R_set:
-    dfRowNames.append(i.name)
-
-for i in N_set:
-    dfRowNames.append(i)
-    
-    
-#df.index = dfRowNames
-
-dfColNames = []
-for i in N_set:
-    dfColNames.append(i)
+#generating row col labels
+dfRowNames, dfColNames = sp.GenearteDFLabels(v_set)
 
 
 #Here u can appead any item that is linearly indenpendent
 #later on we will pick the ones that are most optimal to pivot to later in optimatlity checking
 #for the purposes of the initial solution, we can pick any that is linearly independent
+
+
+M_R_size = len(R_set)
+#auto pedegree list
+autoPedegree = sp.AuthoGeneratePedegree(M_R_size)
+
+#Need to write a funciton to generate slack variables from autopedegree
+slackList = sp.ChooseSlackVariables(v_set, autoPedegree, M_R_size)
+
+#append the slack variables
+slackManualList = [[1,2],[3,4],[3,5]]
+
 dfColNames.append([1,2])
 dfColNames.append([3,4])
 dfColNames.append([3,5])
+
 
 
 MatrixSize = (len(N_set) + len(P),len(N_set) + len(P))
@@ -238,27 +187,7 @@ for p in E_X: print "name ", p.name, "head " ,p.head, "tail", p.tail
 #make H=(V,E)
 H = [v_set, E_set]    
 
-#make random pedegree generator    
-np.random.seed(1)
-N_set_subset = []
-Avaiable_N_set = []
-Auto_Pedegree = []
-N_list = CreateNSet(3)
-nodeCreated1 = []
-nodeCreated2 = []
-#set it starting from 3 because we start from the n=3
-for i in range(3,3+M_R_size):
-    root_index = i+1       
-    randomIndex = np.random.choice(len(N_list), 1)
-    Auto_Pedegree.append(N_list[int(randomIndex)])
-    PedegreeNode = N_list[int(randomIndex)]
-    nodeCreated1 = [PedegreeNode[0],root_index]
-    nodeCreated2 = [PedegreeNode[1],root_index]
-    N_list.remove(PedegreeNode)
-    N_list.append(nodeCreated1)
-    N_list.append(nodeCreated2)
-    
-for i in Auto_Pedegree: print i
+
     
     
 #and then write the code to generate matrix M based on pedegree    
