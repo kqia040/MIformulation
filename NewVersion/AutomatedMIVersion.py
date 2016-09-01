@@ -38,7 +38,6 @@ v_set.append(N_set)
 
 #example reading it
 len(v_set[0])
-#41
 len(v_set[1])
 #861
 
@@ -95,7 +94,6 @@ df = sp.createDataFrameForIncidenceMatrix(df, dfColNames, dfRowNames, P, R_set)
 df = sp.addInPlusAndMinusOnesforSlackVariables(df, dfColNames, dfRowNames, R_set)
 
 
-
 #andt hen we want to find the differnce btween the P and N_set and then 
 #add that to the E_T list with edges of emptyset,IJ
 #Create R, N set (from pedgree I think)
@@ -129,13 +127,19 @@ Initial_demand = sp.initialDemandVector(dfRowNames, P, numCity)
 d_R = Initial_demand[:numCity-3]
 d_N = Initial_demand[numCity-3:]
 f_X = np.zeros(len(E_X))
-def Flow(H, v_set, E_X, E_T, Tau_r, d_R, d_N, f_X):  
-    for i in xrange(0,len(d_R)):
-        d_R[i] = 0
-    
-    for e in E_X:
-        
-    return d_R, f_T
+#d_R is 1, d_N is like 1 for the 12,13,23 and 0 for the rest f_X is initially 0
+#def Flow(H, v_set, E_X, E_T, Tau_r, d_R, d_N, f_X):  
+#    for i in xrange(0,len(d_R)):
+#        d_R[i] = 0
+#    
+#    for e in E_X:
+#        if e.name[0] = 0:
+#            pass
+#        else:
+#            pass
+#    
+#    for v in 
+#    return d_R, f_T
     
     
 
