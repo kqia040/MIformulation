@@ -28,7 +28,7 @@ numCity = len(MatrixFromFile)
 
 #create R set of root nodes
 R_set = sp.CreateRset(numCity)
-
+R_set
 #creates N set
 N_set = sp.CreateNset(numCity)
 #Create V with R and N
@@ -67,6 +67,7 @@ M_R_size = len(R_set)
 autoPedegree = sp.AuthoGeneratePedegree(M_R_size)
 
 #Need to write a funciton to generate slack variables from autopedegree
+#this is not slack variable for the model, but jsut additonal columns to form basis
 slackList = sp.ChooseSlackVariables(v_set, autoPedegree, M_R_size)
 
 #append the slack variables to dfColname
@@ -127,18 +128,25 @@ Initial_demand = sp.initialDemandVector(dfRowNames, P, numCity)
 d_R = Initial_demand[:numCity-3]
 d_N = Initial_demand[numCity-3:]
 f_X = np.zeros(len(E_X))
+
+#find the actual slack variables (leaves for the Tau_r tree)
+def FindLeaves(E_T, N_set):
+    leaf_set = []    
+    dfRowSums = df[0:len(df)][df.columns[0:len(N_set)]].sum(axis=1)
+    
+leaf_set = FindLeaves(E_T,N_set)
 #d_R is 1, d_N is like 1 for the 12,13,23 and 0 for the rest f_X is initially 0
 #def Flow(H, v_set, E_X, E_T, Tau_r, d_R, d_N, f_X):  
 #    for i in xrange(0,len(d_R)):
 #        d_R[i] = 0
 #    
 #    for e in E_X:
-#        if e.name[0] = 0:
+#        if e.name[0] == 0:
 #            pass
 #        else:
 #            pass
 #    
-#    for v in 
+#    for v in v_set
 #    return d_R, f_T
     
     

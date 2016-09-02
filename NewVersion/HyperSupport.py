@@ -38,9 +38,7 @@ class Edge:
 def CreateRset(n):
     R_set = []
     for i in range(4,n+1):
-        x = Vertex()
-        x.name = i
-        R_set.append(x)
+        R_set.append(i)
     return R_set
     
 #creates N set of permutations on the left    
@@ -59,9 +57,9 @@ def GenerateE_T(v_set, P):
     R_set = v_set[0]
     N_set = v_set[1]
     for i in range(len(P)):
-        edgeInstance = Edge([int(R_set[i].name),P[i]])        
+        edgeInstance = Edge([int(R_set[i]),P[i]])        
         edgeInstance.head = P[i]
-        edgeInstance.tail = [[int(R_set[i].name)],[P[i][0],int(R_set[i].name)],[P[i][1], int(R_set[i].name)]]    
+        edgeInstance.tail = [[int(R_set[i])],[P[i][0],int(R_set[i])],[P[i][1], int(R_set[i])]]    
         #print edgeInstance.name    
         E_T.append(edgeInstance)
         
@@ -84,7 +82,7 @@ def GenearteDFLabels(v_set):
     dfRowNames = []
     dfColNames = []
     for i in R_set:
-        dfRowNames.append(i.name)
+        dfRowNames.append(i)
 
     for i in N_set:
         dfRowNames.append(i)
@@ -141,8 +139,8 @@ def createDataFrameForIncidenceMatrix(df, dfColNames, dfRowNames, autoPedegree, 
     for i in R_set:
         colIndexRoot = dfColNames[0:15].index(autoPedegree[R_set.index(i)])
 #        print colIndexRoot, " ", autoPedegree[R_set.index(i)][0], " ", autoPedegree[R_set.index(i)][1], " ", R_set[R_set.index(i)].name
-        newNode1 = [autoPedegree[R_set.index(i)][0],R_set[R_set.index(i)].name]
-        newNode2 = [autoPedegree[R_set.index(i)][1],R_set[R_set.index(i)].name]    
+        newNode1 = [autoPedegree[R_set.index(i)][0],R_set[R_set.index(i)]]
+        newNode2 = [autoPedegree[R_set.index(i)][1],R_set[R_set.index(i)]]    
         rowIndexRoot = R_set.index(i)
         rowIndexInsert1 = dfRowNames.index(newNode1)
         rowIndexInsert2 = dfRowNames.index(newNode2)
@@ -165,8 +163,8 @@ def createMatrixForIncidenceMatrix(matrixA, dfColNames, dfRowNames, autoPedegree
     for i in R_set:
         colIndexRoot = dfColNames[0:15].index(autoPedegree[R_set.index(i)])
 #        print colIndexRoot, " ", autoPedegree[R_set.index(i)][0], " ", autoPedegree[R_set.index(i)][1], " ", R_set[R_set.index(i)].name
-        newNode1 = [autoPedegree[R_set.index(i)][0],R_set[R_set.index(i)].name]
-        newNode2 = [autoPedegree[R_set.index(i)][1],R_set[R_set.index(i)].name]    
+        newNode1 = [autoPedegree[R_set.index(i)][0],R_set[R_set.index(i)]]
+        newNode2 = [autoPedegree[R_set.index(i)][1],R_set[R_set.index(i)]]    
         rowIndexRoot = R_set.index(i)
         rowIndexInsert1 = dfRowNames.index(newNode1)
         rowIndexInsert2 = dfRowNames.index(newNode2)
