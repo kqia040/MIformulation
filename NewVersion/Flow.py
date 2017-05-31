@@ -19,6 +19,9 @@ output: d(R), f(T)
 
 """
 #need this f(e) this floww on edges of e(X)
+
+
+
 def flow(V, E_T, E_X, d_N, f_X):
     R = V[0] #sets 
     N = V[1] #sets   
