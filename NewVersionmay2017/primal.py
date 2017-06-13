@@ -15,7 +15,7 @@ def Primal(V, E_B, MR_inv, b_bar):
     b_N = b_bar[1]
     b_R = b_bar[0]
     #delete this after
-    d_N = b_N
+    #d_N = b_N
     #E_B[1] is E_X and thus len(E_B[1]) will be size of f_X    
     #hmmm maybe this f_X needs to be a dictionary with edges and shit.
     #f_X = np.zeros(len(E_B[1]), dtype = 'int')
@@ -45,6 +45,6 @@ def Primal(V, E_B, MR_inv, b_bar):
     
     b_R, f_T = flow.flow(V, E_B, f_X, b_N)
     
-    return f_T, b_R
+    return f_T, f_X, b_R
     
     

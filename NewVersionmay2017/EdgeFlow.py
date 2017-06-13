@@ -108,6 +108,7 @@ def flow(V, E_B, f_X, d_N):
                     d[w] = d[w] - f_T[e_v]
                 else:
                     d[w] = d[w] + f_T[e_v]
+                #d[w] = d[w] + f_T[e_v]
 #            print w
 #            print unvisitedcount[w]
 #            print "stooooooooooooop"
@@ -123,9 +124,7 @@ def flow(V, E_B, f_X, d_N):
         temp = d[v]        
         d[v] = -temp        
         
-    for v in V[1]:     
-        temp = d[v]        
-        d[v] = -temp        
+      
     d_R = {}
     for v in d:
         if v in R:

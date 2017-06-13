@@ -47,7 +47,9 @@ for j in xrange(len(E_X)):
 
 MR_inv = np.linalg.inv(M_R)
 
-b_bar = [dict.fromkeys(V[0], 1),  dict.fromkeys(V[1], 0)]
+#b_bar_bar = [dict.fromkeys(V[0], 1),  dict.fromkeys(V[1], 0)]
+
+b_bar = [{4: 1}, {(1, 2): 1, (1, 3): 1, (1, 4): 0, (2, 3): 1, (2, 4): 0, (3, 4): 0}]
 
 
 #############################
@@ -56,7 +58,7 @@ b_bar = [dict.fromkeys(V[0], 1),  dict.fromkeys(V[1], 0)]
 
 #############################
 
-#f_T, b_bar[0] = primal.Primal(V, E_B, MR_inv, b_bar)
+f_T, b_bar[0] = primal.Primal(V, E_B, MR_inv, b_bar)
 
 
 

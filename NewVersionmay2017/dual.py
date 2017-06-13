@@ -33,4 +33,4 @@ def dual(V, E_B, E_NB, MR_inv, c_bar, dist_dic):
 
     pi_N, c_X = potential.potential(V, E_B, E_NB, c_T, pi_R, dist_dic)
     
-    return pi_N, c_X
+    return pi_N, pi_R, c_X
