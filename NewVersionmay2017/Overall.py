@@ -91,42 +91,7 @@ pi_N, pi_R, c_bar[1] = dual.dual(V, E_B, E_NB, MR_inv, c_bar, dist_dic)
 
 ###########
 
-#optimality testing
-reduced_cost = dict.fromkeys(E_NB, 0)
 
-for e in E_NB:
-    if e[1] is not None:
-        c_e = 0
-    else:
-        c_e = dist_dic[e[0]]
-    
-    #if there is a tail    
-        
-    if e[1] is not None:
-        temp = pi_N[(e[0][0],e[1])] + pi_N[(e[0][1],e[1])] + pi_R[e[1]]      
-        reduced_cost[e] = c_e +temp - pi_N[e[0]]
-    else:
-        reduced_cost[e] = c_e - pi_N[e[0]]
-
-
-opt = False
-entering_edge = None
-for e in E_NB:
-    if f_NB[e] == 0:
-        if reduced_cost[e] < 0:
-            entering_edge = e
-            break
-    elif f_NB[e] == 1:
-        if reduced_cost[e] > 0:
-            entering_edge = e
-            break
-    
-    opt = True
-
-#entering edge e prime
-
-s_vector= []
-s
 
 
 

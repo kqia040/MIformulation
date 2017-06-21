@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 31 11:47:45 2017
+Created on Sun Jun 18 12:51:08 2017
 
-Debugg flow
+debug potential
 
 @author: Kun
 """
+
+#remember that we can test the results from doing the inverse of the basis
 import api
 import numpy as np
-import primal as primal
-#n = 6
+import dual as dual
+
 n = 4 
 V = api.makeVset(n)
 R = V[0]
@@ -47,26 +49,24 @@ for j in xrange(len(E_X)):
 
 MR_inv = np.linalg.inv(M_R)
 
-#b_bar_bar = [dict.fromkeys(V[0], 1),  dict.fromkeys(V[1], 0)]
-#normal rhs
-b_bar = [{4: -1}, {(1, 2): 1, (1, 3): 1, (1, 4): 0, (2, 3): 1, (2, 4): 0, (3, 4): 0}]
-#rhs = -A(*,e')
-#b_bar = [{4: 0}, {(1, 2): -1, (1, 3): 0, (1, 4): 0, (2, 3): 0, (2, 4): 0, (3, 4): 0}]
-#############################
+c_T = dict.fromkeys(E_T, 0)
 
-#Calling primal below
+for e in E_T:
+    if e[1] is None:
+        c_T[e] = dist_dic[e[0]]
+    else:
+        c_T[e] = 0
 
-#############################
+c_X = dict.fromkeys(E_X, 0)
+for e in E_X:
+    if e[1] is None:
+        c_X[e] = dist_dic[e[0]]
+    else:
+        c_X[e] = 0
 
-f_T, f_X, b_bar_0 = primal.Primal(V, E_B, MR_inv, b_bar)
+c_bar = [c_T,c_X]
 
-
-
-
-
-
-
-
+pi_R, pi_N, c_X = dual.dual(V, E_B, E_NB, MR_inv, c_bar)
 
 
 

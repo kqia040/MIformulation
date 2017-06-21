@@ -115,7 +115,7 @@ def makeE_Xset(n, E_T, P):
     return M_R
 
 
-#Don;t need to add the Uij coz thats part of E_T deffs
+#Don;t need to add the Uij coz thats part of E_T deffs - this is wrong
 def makeE_set(n):
     E = set()
     for k in range(4,n+1):
@@ -124,10 +124,10 @@ def makeE_set(n):
                     if i<j and j<k:
                         E.add(((i,j),k))
 
-#    for j in range(2,n+1):
-#        for i in range(1, n):
-#            if i<j:
-#                E.add(((i, j), None))    
+    for j in range(2,n+1):
+        for i in range(1, n):
+            if i<j:
+                E.add(((i, j), None))    
     
     return E
 

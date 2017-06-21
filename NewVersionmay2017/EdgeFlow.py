@@ -126,11 +126,16 @@ def flow(V, E_B, f_X, d_N):
         
       
     d_R = {}
+    d_N = {}
     for v in d:
         if v in R:
             d_R[v] = d[v]
+    
+    for v in d:
+        if v in N:
+            d_N[v] = d[v]
             
-    return d_R, f_T
+    return d_R, d_N, f_T
         
         
 

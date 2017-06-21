@@ -81,7 +81,7 @@ for e in E_X:
 #call primal
 f_T, f_X, b_bar[0] = primal.Primal(V, E_B, MR_inv, b_bar)
 #call dual
-pi_N, c_bar[1] = dual.dual(V, E_B, E_NB, MR_inv, c_bar, dist_dic)
+pi_R, pi_N, c_bar[1] = dual.dual(V, E_B, E_NB, MR_inv, c_bar, dist_dic)
 
 #while optimality unmet
 
