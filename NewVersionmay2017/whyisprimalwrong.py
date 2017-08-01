@@ -21,24 +21,38 @@ dist_dic = {(1, 2): 30,
             (2,5): 50,
             (3,5): 26,
             (4,5): 30}
-n = 5
+n = 300
 V = api.makeVset(n)
 R = V[0]
 N = V[1]
 
-P =  {((1, 2), 5), ((2, 3), 4)}
-E_T = {((1, 2), 5),
-      ((1, 3), None),
-      ((1, 4), None),
-      ((1, 5), None),
-      ((2, 3), 4),
-      ((2, 4), None),
-      ((2, 5), None),
-      ((3, 4), None),
-      ((3, 5), None),
-      ((4, 5), None)}
-      
-E_X = {((1, 2), 4), ((1, 3), 5)}
+#P =  {((1, 2), 5), ((2, 3), 4)}
+#E_T = {((1, 2), 5),
+#      ((1, 3), None),
+#      ((1, 4), None),
+#      ((1, 5), None),
+#      ((2, 3), 4),
+#      ((2, 4), None),
+#      ((2, 5), None),
+#      ((3, 4), None),
+#      ((3, 5), None),
+#      ((4, 5), None)}
+#      
+#E_X = {((1, 2), 4), ((1, 3), 5)}
+
+E_T = {((1, 2), None),
+ ((1, 3), None),
+ ((3, 4), None),
+ ((1, 5), None),
+ ((2, 3), 4),
+ ((2, 4), None),
+ ((2, 5), None),
+ ((1, 4), 5),
+ ((3, 5), None),
+ ((4, 5), None)}
+
+E_X = {((1, 2), 4), ((3, 4), 5)}
+
 
 E = api.makeE_set(n)
 E_B = [E_T, E_X]
@@ -66,9 +80,10 @@ b_bar = [b_R, b_N]
 f_T, f_X, bbarN = primal.Primal(V, E_B, MR_inv, b_bar)
 
 
+start = time.time()
 r = R+N
 c = list(E_T) + list(E_X)
-M = np.zeros([len(R)+len(N),len(R)+len(N)])
+M = np.zeros([len(R)+len(N),len(R)+len(N)], dtype='int')
 
 
 
@@ -87,21 +102,8 @@ for cc in range(len(c)):
         M[jk][cc] = -1
 
 
-#MMM = np.array([[0,0,0,0,0,0,0,0,0,-1,-1,0],
-#[0,0,0,0,0,0,0,0,-1,0,0,-1],
-#[1,0,0,0,0,0,0,0,0,0,0,-1],
-#[0,1,0,0,0,0,0,0,0,0,-1,0],
-#[0,0,1,0,0,0,0,0,0,-1,-1,0],
-#[0,0,0,1,0,0,0,0,-1,0,0,-1],
-#[0,0,0,0,1,0,0,0,0,-1,0,0],
-#[0,0,0,0,0,1,0,0,-1,0,0,0],
-#[0,0,0,0,0,0,1,0,0,0,0,1],
-#[0,0,0,0,0,0,0,1,0,0,0,0],
-#[0,0,0,0,0,0,0,0,1,0,1,0],
-#[0,0,0,0,0,0,0,0,0,1,0,0]])
 
-
-b = np.zeros(len(r))
+b = np.zeros(len(r), dtype='int')
 for i in range(len(r)):
     if r[i] in R:
         b[i] = -1
@@ -109,9 +111,10 @@ for i in range(len(r)):
         b[i] = 1
     else:
         b[i] = 0
-
-f = np.dot(np.linalg.inv(M),b)
-
+invM = np.linalg.inv(M)
+f = np.dot(invM,b)
+end = time.time()
+print end-start
 
 f_lp = {}
 for i in range(len(f)):
@@ -163,9 +166,25 @@ pi_dl.update(pi_N)
 
 pi_dl == pi_lp
 
-for i in pi_lp:
-    if pi_lp[i] != pi_dl[i]:
-        print i, pi_lp[i],  pi_dl[i]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#for i in pi_lp:
+#    if pi_lp[i] != pi_dl[i]:
+#        print i, pi_lp[i],  pi_dl[i]
 
 
 

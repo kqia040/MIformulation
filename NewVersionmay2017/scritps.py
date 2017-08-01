@@ -26,17 +26,33 @@ R = V[0]
 N = V[1]
 
 E_T, P = api.makeE_Tset(n)
-E_X = api.extendbasis(5, P)
+E_X = api.extendbasis(n, P)
+
+#==============================================================================
+# 
+#
+#
+## script is below
+#
+#
+##
+#
+#==============================================================================
+
+
+
 
 E = api.makeE_set(n)
 E_B = [E_T, E_X]
-E_NB = E-E_T-E_X        
+E_NB = E-E_T-set(E_X)        
 f_NB = dict.fromkeys(E_NB, 0)
-
+#f_NB[((1,3),None)] =1
+#f_NB[((2,3),None)] =1
+#f_NB[((2,3),5)] =1
 r = R+N
 c = list(E_T) + list(E_X)
 M = np.zeros([len(R)+len(N),len(R)+len(N)])
-
+M = np.zeros([12,12])
 
 
 for cc in range(len(c)):
@@ -204,7 +220,7 @@ for e in s:
     elif e in f_X and fbar_X[e] != 0:
         argminsetchoice[e] = s[e]
 
-print argminsetchoice
+#print argminsetchoice
 
 argminset = {}
 minval = float('inf')

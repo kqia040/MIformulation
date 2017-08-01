@@ -46,4 +46,4 @@ def Primal(V, E_B, MR_inv, b_bar):
     b_N = b_bar[1].copy()
     b_R, b_N, f_T = flow.flow(V, E_B, f_X, b_N)
     
-    return f_T, f_X, b_R
+    return f_T, f_X
