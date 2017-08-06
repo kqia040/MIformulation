@@ -21,42 +21,13 @@ dist_dic = {(1, 2): 30,
             (2,5): 50,
             (3,5): 26,
             (4,5): 30}
-n = 300
+n = 5
+
+
 V = api.makeVset(n)
 R = V[0]
 N = V[1]
 
-#P =  {((1, 2), 5), ((2, 3), 4)}
-#E_T = {((1, 2), 5),
-#      ((1, 3), None),
-#      ((1, 4), None),
-#      ((1, 5), None),
-#      ((2, 3), 4),
-#      ((2, 4), None),
-#      ((2, 5), None),
-#      ((3, 4), None),
-#      ((3, 5), None),
-#      ((4, 5), None)}
-#      
-#E_X = {((1, 2), 4), ((1, 3), 5)}
-
-E_T = {((1, 2), None),
- ((1, 3), None),
- ((3, 4), None),
- ((1, 5), None),
- ((2, 3), 4),
- ((2, 4), None),
- ((2, 5), None),
- ((1, 4), 5),
- ((3, 5), None),
- ((4, 5), None)}
-
-E_X = {((1, 2), 4), ((3, 4), 5)}
-
-
-E = api.makeE_set(n)
-E_B = [E_T, E_X]
-E_NB = E-E_T-E_X        
 
 
 
@@ -69,24 +40,30 @@ for j in xrange(len(E_X)):
 
 MR_inv = np.linalg.inv(M_R)
 
+MR_inv = np.array([[-1.,  0.,  0.],
+       [ 0.,  0.,  1.],
+       [ 0.,  1.,  1.]])
+
+
+
 b_R = dict.fromkeys(V[0], -1)
 b_N = dict.fromkeys(V[1], 0)
-b_N[(1,2)] = 1
-b_N[(1,3)] = 1
-b_N[(2,3)] = 1
+starting_b = [(1,2),(1,3),(2,3)]
+for v in starting_b:
+    if v in N:      
+        b_N[v] = 1
+
 
 b_bar = [b_R, b_N]
 
-f_T, f_X, bbarN = primal.Primal(V, E_B, MR_inv, b_bar)
+f_T, f_X = primal.Primal(V, E_B, MR_inv, b_bar)
 
 
-start = time.time()
+#start = time.time()
 r = R+N
 c = list(E_T) + list(E_X)
-M = np.zeros([len(R)+len(N),len(R)+len(N)], dtype='int')
-
-
-
+#import numpy as np 
+M = np.zeros([len(R)+len(N),len(R)+len(N)])
 for cc in range(len(c)):
     if c[cc][1] is None:
         ij = r.index(c[cc][0])
@@ -113,8 +90,8 @@ for i in range(len(r)):
         b[i] = 0
 invM = np.linalg.inv(M)
 f = np.dot(invM,b)
-end = time.time()
-print end-start
+#end = time.time()
+#print end-start
 
 f_lp = {}
 for i in range(len(f)):
@@ -124,6 +101,7 @@ f_pri = f_T.copy()
 f_pri.update(f_X)
 
 f_pri == f_lp
+
 
 
 c_T = dict.fromkeys(E_T, 0)
@@ -143,8 +121,7 @@ for e in E_X:
 
 
 c_bar = [c_T,c_X]
-
-pi_R, pi_N, c_X = dual.dual(V, E_B, E_NB, MR_inv, c_bar)
+pi_R, pi_N, c_X = dual.dual(V, E_B, MR_inv, c_bar)
 
 
 costv = np.zeros(len(c))
@@ -166,6 +143,7 @@ pi_dl.update(pi_N)
 
 pi_dl == pi_lp
 
+pi_dl = pi_lp
 
 
 

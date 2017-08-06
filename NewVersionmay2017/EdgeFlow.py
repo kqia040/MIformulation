@@ -30,11 +30,14 @@ def flow(V, E_B, f_X, d_N):
     #below hsould be E_X and not E_NB
     for e in E_X:
         #tail set
-        d[(e[0][0],e[1])] = d[(e[0][0],e[1])] + f_X[e]
-        d[(e[0][1],e[1])] = d[(e[0][1],e[1])] + f_X[e]
-        d[(e[1])] = d[(e[1])] + f_X[e]
-        #head
-        d[(e[0][0],e[0][1])] = d[(e[0][0],e[0][1])] - f_X[e]
+        if e[1] is None:
+            d[e[0]] = d[e[0]] - f_X[e]
+        else:
+            d[(e[0][0],e[1])] = d[(e[0][0],e[1])] + f_X[e]
+            d[(e[0][1],e[1])] = d[(e[0][1],e[1])] + f_X[e]
+            d[(e[1])] = d[(e[1])] + f_X[e]
+            #head
+            d[(e[0][0],e[0][1])] = d[(e[0][0],e[0][1])] - f_X[e]
 
     unvisitedcount = dict.fromkeys(R, 0)
     unvisitedcount.update(dict.fromkeys(N, 0))     

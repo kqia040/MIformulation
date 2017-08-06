@@ -12,13 +12,15 @@ Potential
 @author: Kun
 """
 #dist_matrix will be a dictionary with distance of ij as value with ij as key
+import copy
+
 def potential(V, E_B, c_T, pi_R):
-    R = V[0]
-    N = V[1]    
+    R = copy.deepcopy(V[0])
+    N = copy.deepcopy(V[1])
     c_X = dict.fromkeys(E_B[1], 0)
-    pi_N = dict.fromkeys(V[1], None)
-    E_X = E_B[1].copy()
-    E_T = E_B[0].copy()
+    pi_N = dict.fromkeys(V[1], None) 
+    E_X = copy.deepcopy(E_B[1])
+    E_T = copy.deepcopy(E_B[0])
     for e in E_X:
         c_X[e] = 0
 

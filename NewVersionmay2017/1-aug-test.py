@@ -15,6 +15,7 @@ import newdualitseems as newdual
 import time
 import copy
 import primal
+import dual
 n = 5
 V = api.makeVset(n)
 R = V[0]
@@ -33,21 +34,60 @@ dist_dic = {(1, 2): 30,
 
 
 notopt = True
-
+exceptset = set()
 
 E_T, E_X, P = api.makeE_B(n,N)
 
+#
+#
+#E_T = E_B[0]
+#E_X = E_B[1]
+
+E_T = list(E_T)
+E_X = list(E_X)
+
 E_B = [E_T, E_X]
 
-exceptset = set()
+len_E_X = len(E_X)
+
+M_R = np.zeros([len_E_X, len_E_X])
+
+
+for j in xrange(len_E_X):
+     i = R.index(E_X[j][1])
+     M_R[i][j] = -1
+
+MR_inv = np.linalg.inv(M_R)
 
 #num_iter = 0
 
 while notopt:
     
 #    num_iter +=1
-    pi_dl = newdual.newdual2(E_B, dist_dic, V)
+    c_T = dict.fromkeys(E_T, 0)
+
+    for e in E_T:
+        if e[1] is None:
+            c_T[e] = dist_dic[e[0]]
+        else:
+            c_T[e] = 0
+    
+    c_X = dict.fromkeys(E_X, 0)
+    for e in E_X:
+        if e[1] is None:
+            c_X[e] = dist_dic[e[0]]
+        else:
+            c_X[e] = 0
+    
+    
+    c_bar = [c_T,c_X]
+    pi_R, pi_N, c_X = dual.dual(V, E_B, MR_inv, c_bar)
+    pi_R.update(pi_N)
+    pi_dl = pi_R
     violate = {}
+#==============================================================================
+#     LAST THING TO IMPLEMENT IS THE BUCKETING THE VIOLATE EDGES
+#==============================================================================
     for k in range(4,n+1):
         for j in range(2,n+1):
                 for i in range(1,j):
@@ -101,20 +141,14 @@ while notopt:
     #   
         print "eprime", e_prime
  
-        M_R = np.zeros([len(E_X), len(E_X)], dtype='int')
-        E_X = list(E_X)
-        R = list(R)
-        for j in xrange(len(E_X)):
-             i = R.index(E_X[j][1])
-             M_R[i][j] = -1
         
-        MR_inv = np.linalg.inv(M_R)
         
         b_R = dict.fromkeys(V[0], -1)
         b_N = dict.fromkeys(V[1], 0)
-        b_N[(1,2)] = 1
-        b_N[(1,3)] = 1
-        b_N[(2,3)] = 1
+        starting_b = [(1,2),(1,3),(2,3)]
+        for v in starting_b:
+            if v in N:      
+                b_N[v] = 1
         
         b_bar = [b_R, b_N]
         
@@ -123,7 +157,7 @@ while notopt:
         if e_prime[1] is None:
             temp_R = dict.fromkeys(V[0], 0)
             temp_N = dict.fromkeys(V[1], 0)
-            temp_N[e_prime[0]] = -1
+            temp_N[e_prime[0]] = -1         
             temp_bar = [temp_R, temp_N]
         
         elif e_prime[1] is not None:
@@ -185,12 +219,12 @@ while notopt:
             e_star = e_prime
         
         else:
-            for e in argmin:
-                if e[1] is not None and e[1] == e_prime[1]:
-                    e_star = e
-            
-            if e_star == None:
-                e_star = argmin.popitem()
+#            for e in argmin:
+#                if e[1] is not None and e[1] == e_prime[1]:
+#                    e_star = e
+#            
+#            if e_star == None:
+            e_star = argmin.popitem()[0]
         
         
                     
@@ -211,99 +245,34 @@ while notopt:
             elif e_prime not in exceptset:
                 exceptset.add(e_prime)
                 
-            #gotta change f_T
-#            f_prime = {}
-#            for e in E_B[0]:
-#                if e == e_prime:
-#                    f_prime[e] = f_T[e]+s[e_star]
-#                else:
-#                    f_prime[e] = f_T[e]+fbar_T[e]*s[e_star]
+#            gotta change f_T
+            f_prime = {}
+            for e in E_B[0]:
+                if e == e_prime:
+                    f_prime[e] = f_T[e]+s[e_star]
+                else:
+                    f_prime[e] = f_T[e]+fbar_T[e]*s[e_star]
+                    
+            f_T = f_prime
 #            for e in E_B[1]:
 #                if e == e_prime:
 #                    f_prime[e] = f_X[e]+s[e_star]
 #                else:
 #                    f_prime[e] = f_X[e]+fbar_X[e]*s[e_star]
        
+           
         else:
             #ELSE: BASIS CHANGE            
-            RR = set(V[0])    
-            if e_star[1] is not None:    
-                e_star_v_set = {e_star[0], (e_star[0][0],e_star[1]), (e_star[0][1],e_star[1]), e_star[1]}
-            elif e_star[1] is None:
-                e_star_v_set = {e_star[0]}
-            
-            if e_star in E_B[1]:
-                if (not e_star_v_set.issubset(RR)):           
-                    E_B[1].add(e_prime)
-                    E_B[1].remove(e_star)
-                else:
-                    #this case will never happen
-                    E_B[1].remove(e_star)
-                    E_B[0].add(e_prime)
-                    RR.remove(e_star_v_set)
-            
-            elif e_star in E_B[0]:
-                #find critical node
-                #check if still spanning tree
-                changedbasis = False                
-                copy_e_star_v_set = copy.deepcopy(e_star_v_set)       
-                for e in E_B[0]:
-                    if e == e_star:
-                        continue
-        
-                    if e[1] is not None:
-                        temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
-                    elif e[1] is None:
-                        temp_e_v_set = {e[0]}
-                        
-                    for v in temp_e_v_set:
-                        if v in copy_e_star_v_set:
-                            copy_e_star_v_set.remove(v)
-                    
-                    if len(copy_e_star_v_set) == 0:
-                        #means that we can remove this edge
-                        E_B[0].remove(e_star)
-                        E_B[0].add(e_prime)
-                        changedbasis = True
-                        break
-
-                if changedbasis is False:               
-                    e_bar = None                    
-                    for e in E_B[1]:
-                        #we find the critical node
-                        temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
-                        if copy_e_star_v_set.issubset(temp_e_v_set):
-                            e_bar = e
-                    
-                    if e_bar is None:
-                        print "critical node not found errrrrrrrrror"
-                    
-                    if e_star[1] is not None:
-                        if e_star[1] != e_bar[1]:
-                            print "error, estar and ebar DONT hav ethe same k value"
-                            
-                        else:
-                            if e_prime[1] is not None:                            
-                                E_B[0].add(e_bar)
-                                E_B[1].remove(e_bar)
-                                E_B[1].add(e_prime)
-                                E_B[0].remove(e_star)
-                            else:
-                                print "eprime is UIJ and cannot insert into E_X"
-                                
-                    elif e_star[1] is None:
-                        print "cannot insert Uij edge into E_X set"
-                    
-                    E_B[0].add(e_bar)
-                    E_B[1].remove(e_bar)
-                    E_B[1].add(e_prime)
-                    E_B[0].remove(e_star)            
-            
-            
+            oldE_B = copy.deepcopy(E_B) 
+            oldV = copy.deepcopy(V) 
+            oldMR_inv = copy.deepcopy(MR_inv) 
+            E_B, V, MR_inv = update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X)
+       
 
         E_T = E_B[0]
         E_X = E_B[1]
-
+        R = V[0]
+        N = V[1]
         print "in ",e_prime, "  out ", e_star
         print " "
 #        print "len violate", len_violate

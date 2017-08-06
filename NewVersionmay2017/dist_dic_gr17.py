@@ -1,141 +1,3 @@
-#dist_dic = {(1, 2): 633,
-# (1, 3): 257,
-# (1, 4): 91,
-# (1, 5): 412,
-# (1, 6): 150,
-# (1, 7): 80,
-# (1, 8): 134,
-# (1, 9): 0,
-# (1, 10): 249,
-# (1, 11): 495,
-# (1, 12): 154,
-# (1, 13): 435,
-# (1, 14): 254,
-# (1, 15): 145,
-# (1, 16): 57,
-# (1, 17): 426,
-# (2, 3): 390,
-# (2, 4): 661,
-# (2, 5): 227,
-# (2, 6): 488,
-# (2, 7): 572,
-# (2, 8): 530,
-# (2, 9): 259,
-# (2, 10): 505,
-# (2, 11): 353,
-# (2, 12): 324,
-# (2, 13): 70,
-# (2, 14): 211,
-# (2, 15): 268,
-# (2, 16): 0,
-# (2, 17): 483,
-# (3, 4): 228,
-# (3, 5): 169,
-# (3, 6): 112,
-# (3, 7): 196,
-# (3, 8): 154,
-# (3, 9): 555,
-# (3, 10): 289,
-# (3, 11): 282,
-# (3, 12): 638,
-# (3, 13): 567,
-# (3, 14): 466,
-# (3, 15): 420,
-# (3, 16): 246,
-# (3, 17): 121,
-# (4, 5): 383,
-# (4, 6): 120,
-# (4, 7): 77,
-# (4, 8): 105,
-# (4, 9): 372,
-# (4, 10): 262,
-# (4, 11): 110,
-# (4, 12): 437,
-# (4, 13): 191,
-# (4, 14): 74,
-# (4, 15): 53,
-# (4, 16): 745,
-# (4, 17): 518,
-# (5, 6): 267,
-# (5, 7): 351,
-# (5, 8): 309,
-# (5, 9): 175,
-# (5, 10): 476,
-# (5, 11): 324,
-# (5, 12): 240,
-# (5, 13): 27,
-# (5, 14): 182,
-# (5, 15): 239,
-# (5, 16): 472,
-# (5, 17): 142,
-# (6, 7): 63,
-# (6, 8): 34,
-# (6, 9): 338,
-# (6, 10): 196,
-# (6, 11): 61,
-# (6, 12): 421,
-# (6, 13): 346,
-# (6, 14): 243,
-# (6, 15): 199,
-# (6, 16): 237,
-# (6, 17): 84,
-# (7, 8): 29,
-# (7, 9): 264,
-# (7, 10): 360,
-# (7, 11): 208,
-# (7, 12): 329,
-# (7, 13): 83,
-# (7, 14): 105,
-# (7, 15): 123,
-# (7, 16): 528,
-# (7, 17): 297,
-# (8, 9): 232,
-# (8, 10): 444,
-# (8, 11): 292,
-# (8, 12): 297,
-# (8, 13): 47,
-# (8, 14): 150,
-# (8, 15): 207,
-# (8, 16): 364,
-# (8, 17): 35,
-# (9, 10): 402,
-# (9, 11): 250,
-# (9, 12): 314,
-# (9, 13): 68,
-# (9, 14): 108,
-# (9, 15): 165,
-# (9, 16): 332,
-# (9, 17): 29,
-# (10, 11): 352,
-# (10, 12): 95,
-# (10, 13): 189,
-# (10, 14): 326,
-# (10, 15): 383,
-# (10, 16): 349,
-# (10, 17): 36,
-# (11, 12): 578,
-# (11, 13): 439,
-# (11, 14): 336,
-# (11, 15): 240,
-# (11, 16): 202,
-# (11, 17): 236,
-# (12, 13): 287,
-# (12, 14): 184,
-# (12, 15): 140,
-# (12, 16): 685,
-# (12, 17): 390,
-# (13, 14): 391,
-# (13, 15): 448,
-# (13, 16): 542,
-# (13, 17): 238,
-# (14, 15): 202,
-# (14, 16): 157,
-# (14, 17): 301,
-# (15, 16): 289,
-# (15, 17): 55,
-# (16, 17): 96}
-
-
 dist_dic = {(1, 2): 30, 
              (1, 3): 26,
              (2, 3): 24,
@@ -328,58 +190,58 @@ def lp_find_flow(E_B, V, rhs_indicator):
     
     
     
-def update_spanning_tree(E_B, e_star, e_prime, f_T, f_X, fbar_T, fbar_X, V):
-    #realy just change basis
-    R = set(V[0])    
-    if e_star[1] is not None:    
-        e_star_v_set = {e_star[0], (e_star[0][0],e_star[1]), (e_star[0][1],e_star[1]), e_star[1]}
-    elif e_star[0] is None:
-        e_star_v_set = {e_star[0]}
-    
-    if e_star in E_B[1]:
-        if (not e_star_v_set.issubset(R)):           
-            E_B[1].add(e_prime)
-            E_B[1].remove(e_star)
-    
-        else:
-            E_B[1].remove(e_star)
-            E_B[0].add(e_prime)
-            R.remove(e_star_v_set)
-    
-    elif e_star in E_B[0]:
-        #find critical node
-        #check if still spanning tree
-        copy_e_star_v_set = copy.deepcopy(e_star_v_set)       
-        for e in E_B[0]:
-            if e == e_star:
-                continue
-
-            if e[1] is not None:
-                temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
-            elif e[1] is None:
-                temp_e_v_set = {e[0]}
-                
-            for v in temp_e_v_set:
-                if v in copy_e_star_v_set:
-                    copy_e_star_v_set.remove(v)
-            
-            if len(copy_e_star_v_set) == 0:
-                #means that we can remove this edge
-                E_B[0].remove(e_star)
-                E_B[0].add(e_prime)
-                       
-        for e in E_B[1]:
-            temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
-            if copy_e_star_v_set.issubset(copy_e_star_v_set):
-                e_bar = e
-        
-        E_B[0].add(e_bar)
-        E_B[1].remove(e_bar)
-        E_B[1].add(e_prime)
-        E_B[0].remove(e_star)
-    
-    
-    
+#def update_spanning_tree(E_B, e_star, e_prime, f_T, f_X, fbar_T, fbar_X, V):
+#    #realy just change basis
+#    R = set(V[0])    
+#    if e_star[1] is not None:    
+#        e_star_v_set = {e_star[0], (e_star[0][0],e_star[1]), (e_star[0][1],e_star[1]), e_star[1]}
+#    elif e_star[0] is None:
+#        e_star_v_set = {e_star[0]}
+#    
+#    if e_star in E_B[1]:
+#        if (not e_star_v_set.issubset(R)):           
+#            E_B[1].add(e_prime)
+#            E_B[1].remove(e_star)
+#    
+#        else:
+#            E_B[1].remove(e_star)
+#            E_B[0].add(e_prime)
+#            R.remove(e_star_v_set)
+#    
+#    elif e_star in E_B[0]:
+#        #find critical node
+#        #check if still spanning tree
+#        copy_e_star_v_set = copy.deepcopy(e_star_v_set)       
+#        for e in E_B[0]:
+#            if e == e_star:
+#                continue
+#
+#            if e[1] is not None:
+#                temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
+#            elif e[1] is None:
+#                temp_e_v_set = {e[0]}
+#                
+#            for v in temp_e_v_set:
+#                if v in copy_e_star_v_set:
+#                    copy_e_star_v_set.remove(v)
+#            
+#            if len(copy_e_star_v_set) == 0:
+#                #means that we can remove this edge
+#                E_B[0].remove(e_star)
+#                E_B[0].add(e_prime)
+#                       
+#        for e in E_B[1]:
+#            temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
+#            if copy_e_star_v_set.issubset(copy_e_star_v_set):
+#                e_bar = e
+#        
+#        E_B[0].add(e_bar)
+#        E_B[1].remove(e_bar)
+#        E_B[1].add(e_prime)
+#        E_B[0].remove(e_star)
+#    
+#    
+#    
     
     
     
