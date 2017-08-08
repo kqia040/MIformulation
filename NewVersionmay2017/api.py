@@ -10,7 +10,7 @@ This is going to be the api that makes the sets and stuff
 import random
 import numpy as np
 import newdualitseems as newdual
-
+import copy
 
 
 def makeVset(n):
@@ -272,119 +272,252 @@ def changebasis(E_B, e_prime):
 
 
 def loop(dist_dic, n, V, R, N):
-    notopt = True
-    #E_T, P = api.makeE_Tset(n)
-    #E_X = api.extendbasis2(n, P)
+    pass
+
+def traverse(E_B, V):
+#    j = 0
+    V_prime = copy.deepcopy(V[0])
+    E_prime = copy.deepcopy(E_B[0])
+    e_list = []
+    v_list = []    
+    len_e_prime = len(E_prime)
+    while len_e_prime > 0:
+        e = E_prime.pop(0)
+#        print e
+        if e[1] is not None:
+            temp_e_v_set = {(e[0][0],e[1]), (e[0][1],e[1]), e[1]}
+        elif e[1] is None:
+            temp_e_v_set = set()
     
-    E_T, E_X, P = makeE_B(n,N)
-    E = makeE_set(n)
-    E_B = [E_T, E_X]
-    E_NB = E-E_T-set(E_X)        
-    
-    f_NB = dict.fromkeys(E_NB, 0)
-#    try:
-#        len_violate = len(violate)
-#    except:
-#        len_violate = float('inf')   
-    
-    
-    
-    
-    
-    while notopt:
-        
-        try:
-            pi_dl = newdual.newdual(E_B, dist_dic, V)
-        except:
-            print "edge inserted created linear dependency"
-            print "algo stopped, opt sol the previous result"
-#            output_cost = api.calcCost2(f_T,dist_dic)    
-#            output_cost2 = api.calcCost2(f_T,dist_dic)             
-#            print "Terminate algorithm"
-#            print "cost is"
-#            print output_cost, output_cost2
-#            break
-#            return len(violate), output_cost, output_cost2, E_B, f_T, f_X
-            return len_violate, E_B
-            
-#        f_T, f_X, bbarN = primal.Primal(V, E_B, MR_inv, b_bar)
-        
-        pi_N = {}
-        pi_R = {}
-        
-        for v in pi_dl:
-            if v in N:
-                pi_N[v] = pi_dl[v]
-            elif v in R:
-                pi_R[v] = pi_dl[v]
-        
-        
-        
-        reduced_cost = dict.fromkeys(E_NB, 0)
-        
-        for e in E_NB:
-            if e[1] is not None:
-                c_e = 0
-            else:
-                c_e = dist_dic[e[0]]
-        
-            if e[1] is not None:
-                temp = pi_N[(e[0][0],e[1])] + pi_N[(e[0][1],e[1])] + pi_R[e[1]]      
-                reduced_cost[e] = c_e  + temp - pi_N[e[0]]
-            else:
-                reduced_cost[e] = c_e - pi_N[e[0]]
-        
-        
-        violate = {}
-        
-        for e in f_NB:
-            if f_NB[e] == 0 and reduced_cost[e] < 0:
-                violate[e] = reduced_cost[e]
-            
-            elif f_NB[e] == 1 and reduced_cost[e] > 0:
-                violate[e] = reduced_cost[e]
-        
-        len_violate = len(violate)
-        if len_violate == 0:
-#            output_cost = api.calcCost(f_T,dist_dic)    
-#            output_cost2 = api.calcCost2(f_T,dist_dic)               
-            print "Terminate algorithm"
-            print "cost is"
-#            print output_cost, output_cost2
-            notopt = False
-#            break
-            return len_violate, E_B
-        
+        if temp_e_v_set.issubset(V_prime):
+            e_list.append(e)
+            v_list.append(e[0])
+            V_prime.append(e[0])
+            len_e_prime -=1
+#            print "yes"
         else:
-            minRC = float('inf')
-            
-            uij_violate = set()   
-            for e in violate:
-                if e[1] is None:
-                    uij_violate.add(e)
-            
-            if len(uij_violate) > 0:
-                for e in uij_violate:
-                    if violate[e] < minRC:
-                        minRC = violate[e]
-                        e_prime = e
-            else:
-                for e in violate:
-                    if violate[e] < minRC:
-                        minRC = violate[e]
-                        e_prime = e
-            
+            E_prime.append(e)
+#            print "no"
+    TR = [V[0]]
+    
+    for i in range(len(e_list)):
+        TR.append(e_list[i])
+        TR.append(v_list[i])
+
+    return TR, e_list, v_list
+
+def find_e_bar(E_B, v_list, e_star):
+    len_v_list = len(v_list)
+    critical_node_dict = dict.fromkeys(E_B[1], None)
+    e_bar_dict = dict.fromkeys(E_B[1], None)
+    for e in E_B[1]:
+        if e[1] is not None:
+            temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1])}
+        elif e[1] is None:
+            temp_e_v_set = set(e[0])
+
+        for i in range(len_v_list-1,-1,-1):
+            if v_list[i] in temp_e_v_set:
+                critical_node_dict[e] = v_list[i]
+                break
+    
+    for e_x in critical_node_dict:
+        if critical_node_dict[e_x] is not None:
+            for e in E_B[0]:
+                if e[1] is not None:
+                    temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
+                elif e[1] is None:
+                    temp_e_v_set = {e[0]}
                 
-            E_B, e_star = changebasis(E_B, e_prime)
-            E_T = E_B[0]
-            E_X = E_B[1]
-            del(E_NB)        
-            E_NB = E-E_T-set(E_X)        
-            del(f_NB)
-            f_NB = dict.fromkeys(E_NB, 0)
-            
-            del(pi_dl)
-            del(pi_N)
-            del(pi_R)
-#            print "violate len is", len_violate
+                if critical_node_dict[e_x] in temp_e_v_set:
+                    e_bar_dict[e_x] = e    
+    
+    e_bar = None    
+    for e in e_bar_dict:
+        if e_bar_dict[e] == e_star:
+            e_bar = e_star
+    
+    if e_bar == None:
+        return None
         
+    else:
+        return e_bar
+        
+        
+def test_MR_inv(E_B, V):
+    r = copy.deepcopy(V[0])
+    temp1 = []
+    temp2 = []
+    for e in E_B[0]:
+        if e[1] is None:
+            temp1.append(e)
+        else:
+            temp2.append(e)
+            
+    c = temp1+temp2+E_B[1]
+    
+    
+    for e in temp1:
+        r.append(e[0])
+    
+    for e in temp2:
+        if e[1] is not None:
+            temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1])}
+        elif e[1] is None:
+            temp_e_v_set = set(e[0])
+            
+        for v in temp_e_v_set:
+            if v not in r:
+                r.append(v)
+                continue
+    
+    len_R = len(r)
+    M = np.zeros([len_R,len_R])
+    for cc in range(len(c)):
+        if c[cc][1] is None:
+            ij = r.index(c[cc][0])
+            M[ij][cc] = 1
+        else:
+            ij = r.index(c[cc][0])
+            k = r.index(c[cc][1])
+            ik = r.index((c[cc][0][0],c[cc][1]))
+            jk = r.index((c[cc][0][1],c[cc][1]))
+            M[ij][cc] = 1
+            M[k][cc] = -1
+            M[ik][cc] = -1
+            M[jk][cc] = -1
+    
+    
+    rows = range(0,len(V[0]))
+    cols = range(0,len(V[1]))
+    B = M[rows][:,cols]
+        
+    rows = range(len(V[0]),len_R)
+    cols = range(0,len(V[1]))
+    U = M[rows][:,cols]
+    
+    rows = range(0,len(V[0]))
+    cols = range(len(V[1]),len_R)
+    C = M[rows][:,cols]
+    
+    
+    rows = range(len(V[0]),len_R)
+    cols = range(len(V[1]),len_R)
+    D = M[rows][:,cols]
+    
+    MR11 = C - np.dot(np.dot(B,np.linalg.inv(U)),D)
+    MR_inv11 = np.linalg.inv(MR11)
+    return MR_inv11
+    
+    
+def find_e_star(E_B, V, e_prime):
+    E_T = E_B[0]
+    E_X = E_B[1]
+    R = V[0]
+    N = V[1]
+    r = list(R)+list(N)
+    c = list(E_T) + list(E_X)
+    len_R = len(R)
+    len_N = len(N)
+    e_star_dic = set() 
+    M = np.zeros([len_R+len_N,len_R+len_N])
+    for cc in range(len(c)):
+        if c[cc][1] is None:
+            ij = r.index(c[cc][0])
+            M[ij][cc] = 1
+        else:
+            ij = r.index(c[cc][0])
+            k = r.index(c[cc][1])
+            ik = r.index((c[cc][0][0],c[cc][1]))
+            jk = r.index((c[cc][0][1],c[cc][1]))
+            M[ij][cc] = 1
+            M[k][cc] = -1
+            M[ik][cc] = -1
+            M[jk][cc] = -1
+    
+    M_eprime = np.zeros(len_R+len_N)
+    
+    if e_prime[1] is None:
+        ij = r.index(e_prime[0])
+        M_eprime[ij] = 1
+    else:
+        ij = r.index(e_prime[0])
+        k = r.index(e_prime[1])
+        ik = r.index((e_prime[0][0],e_prime[1]))
+        jk = r.index((e_prime[0][1],e_prime[1]))
+        M_eprime[ij] = 1
+        M_eprime[k] = -1
+        M_eprime[ik] = -1
+        M_eprime[jk] = -1
+    
+    
+    correct_rank = np.linalg.matrix_rank(M)
+    counter = 0
+    while counter<(len_R+len_N):
+        cols = range(len_R+len_N)    
+        cols.remove(counter)
+        M[:,cols]
+        test_rank = np.linalg.matrix_rank(np.c_[M[:,cols],M_eprime])
+        if test_rank == correct_rank:
+            e_star_dic.add(c[counter])
+        counter+=1
+    
+
+    return e_star_dic
+    
+def lp_find_flow(E_B, V, rhs_indicator):
+    R = V[0]
+    N = V[1]    
+    r = R+N
+    E_T = E_B[0]
+    E_X = E_B[1]    
+    c = list(E_T) + list(E_X)
+    M = np.zeros([len(R)+len(N),len(R)+len(N)])
+    for cc in range(len(c)):
+        if c[cc][1] is None:
+            ij = r.index(c[cc][0])
+            M[ij][cc] = 1
+        else:
+            ij = r.index(c[cc][0])
+            k = r.index(c[cc][1])
+            ik = r.index((c[cc][0][0],c[cc][1]))
+            jk = r.index((c[cc][0][1],c[cc][1]))
+            M[ij][cc] = 1
+            M[k][cc] = -1
+            M[ik][cc] = -1
+            M[jk][cc] = -1  
+    
+    b = np.zeros(len(r))
+    if rhs_indicator == 'default':    
+        for i in range(len(r)):
+            if r[i] in R:
+                b[i] = -1
+            elif r[i] == (1,2) or r[i] == (1,3) or r[i] == (2,3):
+                b[i] = 1
+            else:
+                b[i] = 0
+    else:
+        #we get an edge ((ij)k) or ((ij) None)
+        if rhs_indicator[1] is None:
+            for i in range(len(r)):
+                if r[i] == rhs_indicator[0]:
+                    b[i] = -1
+        else:
+            ij = rhs_indicator[0]
+            k = rhs_indicator[1]
+            ik = (rhs_indicator[0][0], rhs_indicator[1])  
+            jk = (rhs_indicator[0][1], rhs_indicator[1]) 
+            for i in range(len(r)):
+                if r[i] == ij:
+                    b[i] = -1
+                elif r[i] == k or r[i] == ik or r[i] == jk:
+                    b[i] = 1
+
+    
+    f = np.dot(np.linalg.inv(M),b)
+   
+    f_lp = {}
+    for i in range(len(f)):
+        f_lp[c[i]] = f[i]
+    
+    return f_lp

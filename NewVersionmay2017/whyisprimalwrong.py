@@ -10,6 +10,7 @@ Created on Thu Jun 22 14:51:58 2017
 import api
 import numpy as np
 import primal as primal
+import trail_primal
 import dual as dual
 dist_dic = {(1, 2): 30, 
              (1, 3): 26,
@@ -57,6 +58,8 @@ for v in starting_b:
 b_bar = [b_R, b_N]
 
 f_T, f_X = primal.Primal(V, E_B, MR_inv, b_bar)
+
+f_T, f_X = trail_primal.Primal(V, E_B, MR_inv, b_bar)
 
 
 #start = time.time()

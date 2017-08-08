@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
 """
+Created on Tue Aug 08 11:14:50 2017
+
+trail edge flow
+
+@author: Kun
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Tue May 16 11:55:30 2017
 
 Test flow
@@ -31,17 +40,13 @@ def flow(V, E_B, f_X, d_N):
     for e in E_X:
         #tail set
         if e[1] is None:
-            if e[0] is not None:
-                d[e[0]] = d[e[0]] - f_X[e]
+            d[e[0]] = d[e[0]] - f_X[e]
         else:
-            if e[0] is not None:
-                d[(e[0][0],e[1])] = d[(e[0][0],e[1])] + f_X[e]
-                d[(e[0][1],e[1])] = d[(e[0][1],e[1])] + f_X[e]
-                d[(e[1])] = d[(e[1])] + f_X[e]
-                #head
-                d[(e[0][0],e[0][1])] = d[(e[0][0],e[0][1])] - f_X[e]
-            else:
-                d[(e[1])] = d[(e[1])] + f_X[e]
+            d[(e[0][0],e[1])] = d[(e[0][0],e[1])] + f_X[e]
+            d[(e[0][1],e[1])] = d[(e[0][1],e[1])] + f_X[e]
+            d[(e[1])] = d[(e[1])] + f_X[e]
+            #head
+            d[(e[0][0],e[0][1])] = d[(e[0][0],e[0][1])] - f_X[e]
 
     unvisitedcount = dict.fromkeys(R, 0)
     unvisitedcount.update(dict.fromkeys(N, 0))     
@@ -53,8 +58,6 @@ def flow(V, E_B, f_X, d_N):
     for e in E_T:
         if e[1] is None:
             unvisitedcount[e[0]] += 1
-        elif e[0] is None:
-            unvisitedcount[e[1]] += 1
         else:
             #ij
             unvisitedcount[e[0]] += 1
@@ -81,62 +84,54 @@ def flow(V, E_B, f_X, d_N):
     while Queue:
         v_curr = Queue.pop(0) 
 #        print v_curr
+        e_v_list = []        
         for e in E_T:
             if e[0] == v_curr:
-                e_v = e
-            elif e[1] == v_curr:
-                e_v = e
+                e_v_list.append(e)
         #need to handle error better
         
+        for e_v in e_v_list:
+    #        print e_v
+            ij = e_v[0]
+            k = e_v[1]        
+            ik = (e_v[0][0],e_v[1])
+            jk = (e_v[0][1],e_v[1])
             
-#        print e_v
-#        ij = e_v[0]
-#        k = e_v[1]        
-#        ik = (e_v[0][0],e_v[1])
-#        jk = (e_v[0][1],e_v[1])
-        
-        f_T[e_v] = d[v_curr]
-#        if v_curr == ij:
-#            f_T[e_v] = d[v_curr]
-#        else:
-#            f_T[e_v] = -d[v_curr]
-        
-        
-        if e_v[1] is not None:
-            if e_v[0] is None:
-                w_list = [e_v[1]]
-            else:
-                ij = e_v[0]
-                k = e_v[1]        
-                ik = (e_v[0][0],e_v[1])
-                jk = (e_v[0][1],e_v[1])
+            f_T[e_v] = d[v_curr]
+    #        if v_curr == ij:
+    #            f_T[e_v] = d[v_curr]
+    #        else:
+    #            f_T[e_v] = -d[v_curr]
+            
+            
+            if e_v[1] is not None:
                 w_list = [ij, k, ik, jk]
-        else:
-            w_list = [e_v[0]]
-#        print w_list
-        #or if v_curr in w_list: remove
-        if v_curr in w_list:
-            w_list.remove(v_curr)
-#        print w_list
-#        if w_list is None:
-#            print "w_list is None, wtf"
-        for w in w_list:
-            if w is not None:
-                if w == ij:
-                    d[w] = d[w] - f_T[e_v]
-                else:
-                    d[w] = d[w] + f_T[e_v]
-                #d[w] = d[w] + f_T[e_v]
-#            print w
-#            print unvisitedcount[w]
-#            print "stooooooooooooop"
-            unvisitedcount[w] -= 1
-            if unvisitedcount[w] == 1 and w not in R:
-                Queue.append(w)
-
-#        print Queue
-#        print f_T   
-#        print v_curr
+            else:
+                w_list = [ij]
+    #        print w_list
+            #or if v_curr in w_list: remove
+            if v_curr in w_list:
+                w_list.remove(v_curr)
+    #        print w_list
+    #        if w_list is None:
+    #            print "w_list is None, wtf"
+            for w in w_list:
+                if w is not None:
+                    if w == ij:
+                        d[w] = d[w] - f_T[e_v]
+                    else:
+                        d[w] = d[w] + f_T[e_v]
+                    #d[w] = d[w] + f_T[e_v]
+    #            print w
+    #            print unvisitedcount[w]
+    #            print "stooooooooooooop"
+                unvisitedcount[w] -= 1
+                if unvisitedcount[w] == 1 and w not in R:
+                    Queue.append(w)
+    
+    #        print Queue
+    #        print f_T   
+    #        print v_curr
         
     for v in V[0]:     
         temp = d[v]        

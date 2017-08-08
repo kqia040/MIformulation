@@ -27,7 +27,10 @@ def potential(V, E_B, c_T, pi_R):
     
     for v in R:
         for e in E_T:
-            headtailunion = [e[0], e[1], (e[0][0],e[1]), (e[0][1],e[1])]
+            if e[0] is not None:
+                headtailunion = [e[0], e[1], (e[0][0],e[1]), (e[0][1],e[1])]
+            else:
+                headtailunion = [e[1]]
 #            print v, "vvvv"
 #            print e, "eeeee"            
             if v in headtailunion:
@@ -37,7 +40,10 @@ def potential(V, E_B, c_T, pi_R):
                     c_T[e] = c_T[e] + pi_R[v]
         #E_X set represents the M_R side of the basis
         for e in E_X:
-            headtailunion = [e[0], e[1], (e[0][0],e[1]), (e[0][1],e[1])]
+            if e[0] is not None:
+                headtailunion = [e[0], e[1], (e[0][0],e[1]), (e[0][1],e[1])]
+            else:
+                headtailunion = [e[1]]
 #            print v, "vvvv"
 #            print e, "eeeee"            
             if v in headtailunion:
@@ -54,15 +60,19 @@ def potential(V, E_B, c_T, pi_R):
             if e[0] in N:
                 count+=1
             unvisited[e] = count
-        else:           
-            if e[0] in N:
-                count +=1
-            if (e[0][0],e[1]) in N:
-                count +=1
-            if (e[0][1],e[1]) in N:
-                count +=1
-            if (e[1]) in N:
-                count +=1
+        else:
+            if e[0] is None:
+                if e[1] in N:
+                    count+=1
+            else:
+                if e[0] in N:
+                    count +=1
+                if (e[0][0],e[1]) in N:
+                    count +=1
+                if (e[0][1],e[1]) in N:
+                    count +=1
+                if (e[1]) in N:
+                    count +=1
         #here i dont loop through and do stuff for Uij
         unvisited[e] = count
         
@@ -73,14 +83,18 @@ def potential(V, E_B, c_T, pi_R):
                 count+=1
             unvisited[e] = count
         else:           
-            if e[0] in N:
-                count +=1
-            if (e[0][0],e[1]) in N:
-                count +=1
-            if (e[0][1],e[1]) in N:
-                count +=1
-            if (e[1]) in N:
-                count +=1
+            if e[0] is None:
+                if e[1] in N:
+                    count+=1
+            else:
+                if e[0] in N:
+                    count +=1
+                if (e[0][0],e[1]) in N:
+                    count +=1
+                if (e[0][1],e[1]) in N:
+                    count +=1
+                if (e[1]) in N:
+                    count +=1
         #here i dont loop through and do stuff for Uij
         unvisited[e] = count
         
@@ -99,11 +113,14 @@ def potential(V, E_B, c_T, pi_R):
         if e_prime[1] is None:
             v_prime = e_prime[0]
         else:
-            e_incident = [e_prime[0], e_prime[1], (e_prime[0][0],e_prime[1]), (e_prime[0][1],e_prime[1])]
+            if e_prime[0] is None:
+                v_prime = e_prime[1]
+            else:
+                e_incident = [e_prime[0], e_prime[1], (e_prime[0][0],e_prime[1]), (e_prime[0][1],e_prime[1])]
         
-            for v in e_incident:
-                if v in N and v not in visited_node:
-                    v_prime = v
+                for v in e_incident:
+                    if v in N and v not in visited_node:
+                        v_prime = v
         if v_prime is None:
             print "errrrror v_prime is None"
             #so... when the edges of the Pedigree gets added to the Queue, then 
@@ -131,10 +148,16 @@ def potential(V, E_B, c_T, pi_R):
                 continue
             else:
                 temp_set = set()
-                temp_set.add(e[0])
-                temp_set.add((e[0][0],e[1]))
-                temp_set.add((e[0][1],e[1]))
-                temp_set.add(e[1])
+                if e[1] is not None:             
+                    temp_set.add(e[1])
+                    if e[0] is not None:                    
+                        temp_set.add(e[0])
+                        temp_set.add((e[0][0],e[1]))
+                        temp_set.add((e[0][1],e[1]))
+                    
+                else:
+                    if e[0] is not None:
+                        temp_set.add(e[0])
                 if v_prime in temp_set:
                     #if v_prime is the head                
                     if v_prime == e[0]:
@@ -150,10 +173,17 @@ def potential(V, E_B, c_T, pi_R):
                 continue
             else:
                 temp_set = set()
-                temp_set.add(e[0])
-                temp_set.add((e[0][0],e[1]))
-                temp_set.add((e[0][1],e[1]))
-                temp_set.add(e[1])
+                if e[1] is not None:             
+                    temp_set.add(e[1])
+                    if e[0] is not None:                    
+                        temp_set.add(e[0])
+                        temp_set.add((e[0][0],e[1]))
+                        temp_set.add((e[0][1],e[1]))
+                    
+                else:
+                    if e[0] is not None:
+                        temp_set.add(e[0])
+                        
                 if v_prime in temp_set:
                     if v_prime == e[0]:
                         c_X[e] = c_X[e] - pi_N[v_prime]

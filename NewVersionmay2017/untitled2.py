@@ -92,21 +92,21 @@ for cc in range(len(c)):
         M[jk][cc] = -1
 
 
-rows = range(0,3)
-cols = range(0,9)
+rows = range(0,2)
+cols = range(0,10)
 B = M[rows][:,cols]
     
-rows = range(3,12)
-cols = range(0,9)
+rows = range(2,12)
+cols = range(0,10)
 U = M[rows][:,cols]
 
-rows = range(0,3)
-cols = range(9,12)
+rows = range(0,2)
+cols = range(10,12)
 C = M[rows][:,cols]
 
 
-rows = range(3,12)
-cols = range(9,12)
+rows = range(2,12)
+cols = range(10,12)
 D = M[rows][:,cols]
 
 MR11 = C - np.dot(np.dot(B,np.linalg.inv(U)),D)
@@ -123,74 +123,7 @@ for i in range(len(N)):
 externalflow = np.dot(MR_inv,(b_R-np.dot(np.dot(B,np.linalg.inv(U)),b_N)))
 
         
-def traverse(E_B, V):
-#    j = 0
-    V_prime = copy.deepcopy(V[0])
-    E_prime = copy.deepcopy(E_B[0])
-    e_list = []
-    v_list = []    
-    len_e_prime = len(E_prime)
-    while len_e_prime > 0:
-        e = E_prime.pop(0)
-#        print e
-        if e[1] is not None:
-            temp_e_v_set = {(e[0][0],e[1]), (e[0][1],e[1]), e[1]}
-        elif e[1] is None:
-            temp_e_v_set = set()
-    
-        if temp_e_v_set.issubset(V_prime):
-            e_list.append(e)
-            v_list.append(e[0])
-            V_prime.append(e[0])
-            len_e_prime -=1
-#            print "yes"
-        else:
-            E_prime.append(e)
-#            print "no"
-    TR = [V[0]]
-    
-    for i in range(len(e_list)):
-        TR.append(e_list[i])
-        TR.append(v_list[i])
 
-    return TR, e_list, v_list
-
-def find_e_bar(E_B, v_list, e_star):
-    len_v_list = len(v_list)
-    critical_node_dict = dict.fromkeys(E_B[1], None)
-    e_bar_dict = dict.fromkeys(E_B[1], None)
-    for e in E_B[1]:
-        if e[1] is not None:
-            temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1])}
-        elif e[1] is None:
-            temp_e_v_set = set(e[0])
-
-        for i in range(len_v_list-1,-1,-1):
-            if v_list[i] in temp_e_v_set:
-                critical_node_dict[e] = v_list[i]
-                break
-    
-    for e_x in critical_node_dict:
-        if critical_node_dict[e_x] is not None:
-            for e in E_B[0]:
-                if e[1] is not None:
-                    temp_e_v_set = {e[0], (e[0][0],e[1]), (e[0][1],e[1]), e[1]}
-                elif e[1] is None:
-                    temp_e_v_set = {e[0]}
-                
-                if critical_node_dict[e_x] in temp_e_v_set:
-                    e_bar_dict[e_x] = e    
-    
-    e_bar = None    
-    for e in e_bar_dict:
-        if e_bar_dict[e] == e_star:
-            e_bar = e_star
-    
-    if e_bar == None:
-        return None
-        
-    else:
-        return e_bar
 
 
 

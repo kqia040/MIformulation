@@ -6,7 +6,7 @@ Created on Sun Aug 06 15:48:30 2017
 """
 import copy
 from update_MR_Inv import update_MR_inv
-
+import api
 
 def update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X):
     #ebar is the cirtical edge
@@ -57,8 +57,8 @@ def update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X):
         
         #if e_bar
         #if critical edge exisits        
-        T_R, e_list, v_list = traverse(E_B, V)
-        e_bar = find_e_bar(E_B, v_list, e_star)
+        T_R, e_list, v_list = api.traverse(E_B, V)
+        e_bar = api.find_e_bar(E_B, v_list, e_star)
         
 #==============================================================================
 #         NEED TO CHECK THIS CASE
@@ -71,11 +71,11 @@ def update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X):
             intermediateE_B = copy.deepcopy(E_B)
             intermediateE_B[0][intermediateE_B[0].index(e_star)] = e_bar
             intermediateE_B[1][intermediateE_B[1].index(e_bar)] = e_star
-            intermediateMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, intermediateE_B, e_star, e_prime, fbar_T, fbar_X)
+            intermediateMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, intermediateE_B, e_star, e_bar, fbar_T, fbar_X)
 #            Case = '2a-second-iteration'
-            newE_B = copy.deepcopy(E_B)
+            newE_B = copy.deepcopy(intermediateE_B)
             newE_B[1][newE_B[1].index(e_star)] = e_prime
-            newMR_inv = update_MR_inv(Case, intermediateMR_inv, V, newV, E_B, newE_B, e_prime, e_star, fbar_T, fbar_X)
+            newMR_inv = update_MR_inv(Case, intermediateMR_inv, V, newV, intermediateE_B, newE_B, e_prime, e_star, fbar_T, fbar_X)
                     
 
             return newE_B, newV, newMR_inv
@@ -112,10 +112,10 @@ def update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X):
                 Case = '2b1'
                 newV = copy.deepcopy(V) 
                 newE_B = copy.deepcopy(E_B)  
-                newE_B[0].add(e_prime)
+                newE_B[0].append(e_prime)
                 newE_B[0].remove(e_star)
                 
-                newMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, newE_B, e_prime, e_star, e_bar, fbar_T, fbar_X)
+                newMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, newE_B, e_prime, e_star, fbar_T, fbar_X)
                     
 
                 return newE_B, newV, newMR_inv
@@ -133,7 +133,7 @@ def update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X):
                     newE_B[1].append(e_prime)
                     newE_B[0].remove(e_star)
                     
-                    newMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, newE_B, e_prime, e_star, e_bar, fbar_T, fbar_X)
+                    newMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, newE_B, e_prime, e_star, fbar_T, fbar_X)
                     
 
                     return newE_B, newV, newMR_inv
@@ -149,7 +149,7 @@ def update_spanning_tree(E_B, MR_inv, V, e_prime, e_star, fbar_T, fbar_X):
                     newE_B[0].append(e_prime)
                     newE_B[0].remove(e_star)
                     Case = '2b2'                    
-                    newMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, newE_B, e_prime, e_star, e_bar, fbar_T, fbar_X)
+                    newMR_inv = update_MR_inv(Case, MR_inv, V, newV, E_B, newE_B, e_prime, e_star, fbar_T, fbar_X)
                     
 
                     return newE_B, newV, newMR_inv

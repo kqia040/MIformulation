@@ -17,6 +17,8 @@ def dual(V, E_B, MR_inv, c_bar):
     pi_R = dict.fromkeys(V[0], 0)
 #    pi_R, pi_N, c_0 = potential.potential(V, E_B, E_NB, c_T, pi_R)
     pi_R, pi_N, c_0 = secondpotential.potential(V, E_B, c_T, pi_R)
+    if len(E_B[1]) ==0:
+        return pi_R, pi_N, c_0
     temp = {}
     for i in c_X:
         temp[i] = c_X[i] - c_0[i]    

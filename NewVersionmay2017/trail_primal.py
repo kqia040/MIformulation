@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 24 13:47:19 2017
-primal
+Created on Tue Aug 08 11:15:11 2017
+trail primal
 
 @author: Kun
 """
-import EdgeFlow as flow
+
+import trail_edge_flow as flow
 import numpy as np
 
 
@@ -21,8 +22,7 @@ def Primal(V, E_B, MR_inv, b_bar):
     #f_X = np.zeros(len(E_B[1]), dtype = 'int')
     f_X = dict.fromkeys(E_B[1], 0)
     d_R, d_N, f_T = flow.flow(V, E_B, f_X, b_N)
-    if len(E_B[1]) == 0:
-        return f_T, f_X
+    
     #hmm u cant just minus those coz those are sets, d_R is a dictionary
     #should be something like this dict(set(b.items()) - set(a.items()))
     #temp = np.array(b_R) - np.array(d_R)    
